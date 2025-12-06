@@ -24,7 +24,7 @@ locator.add_locator('logging', logging)
 
 #################################################
 
-from src.engine.retrogear import RetroGearEngine
+from src.game.retrogear import RetroGearEngine
 
 if __name__ == "__main__":
     logging.info("RetroGear - Engine (POC)")

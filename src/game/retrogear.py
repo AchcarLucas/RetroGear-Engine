@@ -3,6 +3,8 @@ import sys
 
 from src.manager.locator_manager import LocatorManager
 
+from src.game.interface.engine_interface import IEngine
+
 locator = LocatorManager()
 
 # getting configuration manager
@@ -11,9 +13,9 @@ env = locator.get_locator('env')
 # getting logging manager
 logging = locator.get_locator('logging')
 
-class RetroGearEngine():
+class RetroGearEngine(IEngine):
     def __init__(self,
-                 caption="Retro Gear Engine",
+                 caption="Retro Gear - Engine",
                  screen_width=800,
                  screen_height=600,
                  fps=60
@@ -81,7 +83,6 @@ class RetroGearEngine():
             gerenciamento da lógica da engine
         '''
         pass
-
 
     def render(self):
         '''

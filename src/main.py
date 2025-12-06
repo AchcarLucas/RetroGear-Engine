@@ -20,4 +20,4 @@ locator.add_locator('env', env)
 locator.add_locator('logging', logging)
 
 if __name__ == "__main__":
-    logging.info("POC - RetroGear")
+    logging.info("RetroGear - Engine (POC)")

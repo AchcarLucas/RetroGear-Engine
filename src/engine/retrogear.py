@@ -38,6 +38,7 @@ class RetroGearEngine():
         self.screen = pygame.display.set_mode(
             (self.screen_width, self.screen_height)
         )
+
         pygame.display.set_caption(self.caption)
 
         # configuração do relógio e do fps
@@ -45,7 +46,7 @@ class RetroGearEngine():
 
     def run(self):
         '''
-            Loop principal da engine
+            loop principal da engine
         '''
         self.running = True
 
@@ -79,9 +80,11 @@ class RetroGearEngine():
         '''
             gerenciamento da lógica da engine
         '''
-        keys = pygame.key.get_pressed()
         pass
 
 
     def render(self):
+        '''
+            gerenciamento da renderização da engine
+        '''
         pass

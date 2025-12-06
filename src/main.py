@@ -1,23 +1,39 @@
-from src.manager.env_manager import EnvManager
-from src.manager.logging_manager import LoggingManager
-from src.manager.locator_manager import LocatorManager
-
+#################################################
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# configuration manager
+#################################################
+
+from src.manager.locator_manager import LocatorManager
+from src.manager.logging_manager import LoggingManager
+from src.manager.env_manager import EnvManager
+
+# create configuration manager
 env = EnvManager()
 
-# logging manager
+# create logging manager
 logging = LoggingManager().make_logger(env.LOGGEING_CONFIG_JSON)
 
-# location manager
+# create location manager
 locator = LocatorManager()
 
-# setting do env e do logging dentro do locator
+# setting instances to locator
 locator.add_locator('env', env)
 locator.add_locator('logging', logging)
 
+#################################################
+
+from src.engine.retrogear import RetroGearEngine
+
 if __name__ == "__main__":
     logging.info("RetroGear - Engine (POC)")
+
+    engine = RetroGearEngine(
+        env.CAPTION,
+        env.SCREEN_WIDTH,
+        env.SCREEN_HEIGHT,
+        env.FPS
+    )
+
+    engine.run()

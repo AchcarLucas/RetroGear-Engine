@@ -1,11 +1,28 @@
 import pygame
 import sys
 
+from src.manager.locator_manager import LocatorManager
+
+locator = LocatorManager()
+
+# getting configuration manager
+env = locator.get_locator('env')
+
+# getting logging manager
+logging = locator.get_locator('logging')
+
 class RetroGearEngine():
-    def __init__(self, caption="Retro Gear Engine", screen_width=800, screen_height=600, fps=60):
+    def __init__(self,
+                 caption="Retro Gear Engine",
+                 screen_width=800,
+                 screen_height=600,
+                 fps=60
+        ):
         self.caption = caption
+
         self.screen_width = screen_width
         self.screen_height = screen_height
+
         self.fps = fps
 
         self.init()
@@ -14,8 +31,13 @@ class RetroGearEngine():
         # inicialização do pygame
         pygame.init()
 
+        logging.info(f"screen_width: {self.screen_width}")
+        logging.info(f"screen_height: {self.screen_height}")
+
         # configurações da tela
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.screen = pygame.display.set_mode(
+            (self.screen_width, self.screen_height)
+        )
         pygame.display.set_caption(self.caption)
 
         # configuração do relógio e do fps
@@ -44,10 +66,22 @@ class RetroGearEngine():
         sys.exit()
 
     def event(self, event):
-        pass
+        '''
+            gerenciamento do display da engine
+        '''
+        if(event.type == pygame.QUIT):
+            self.running = False
+        if(event.type == pygame.KEYDOWN):
+            if(event.key == pygame.K_ESCAPE):
+                self.running = False
 
     def update(self, delta_time):
+        '''
+            gerenciamento da lógica da engine
+        '''
+        keys = pygame.key.get_pressed()
         pass
+
 
     def render(self):
         pass

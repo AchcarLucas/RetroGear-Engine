@@ -3,7 +3,7 @@ import sys
 
 from src.manager.locator_manager import LocatorManager
 
-from src.game.interface.engine_interface import IEngine
+from src.retrogear.interface.engine_interface import IEngine
 
 locator = LocatorManager()
 
@@ -70,7 +70,7 @@ class RetroGearEngine(IEngine):
 
     def event(self, event):
         '''
-            gerenciamento do display da engine
+            gerenciamento de event da engine
         '''
         if(event.type == pygame.QUIT):
             self.running = False

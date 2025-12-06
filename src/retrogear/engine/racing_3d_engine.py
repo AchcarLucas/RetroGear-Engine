@@ -15,7 +15,7 @@ logging = locator.get_locator('logging')
 """
     Racing Engine é apenas uma 'prova de conceito' do Pseudo-3D Racing
 """
-class RacingEngine(IEngine):
+class Racing3DEngine(IEngine):
     def __init__(self):
         pass
 

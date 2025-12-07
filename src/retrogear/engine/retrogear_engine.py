@@ -46,6 +46,9 @@ class RetroGearEngine(IEngine):
         # configuração do relógio e do fps
         self.clock = pygame.time.Clock()
 
+        # configuração da fonte
+        self.font = pygame.font.SysFont(None, 24)
+
     def run(self):
         '''
             loop principal da engine
@@ -55,6 +58,9 @@ class RetroGearEngine(IEngine):
         while self.running:
             delta_time = self.clock.tick(self.fps)
             self.screen.fill((0, 0, 0))
+
+            fps_text = self.font.render(f"FPS: {int(self.clock.get_fps())}", True, (255, 255, 255))
+            self.screen.blit(fps_text, (10, 10))
 
             for event in pygame.event.get():
                 self.event(event)

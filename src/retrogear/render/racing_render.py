@@ -130,6 +130,11 @@ class RacingRenderer(IRender):
                     assim, vou conseguir pintar a pista do jeito que quero
             """
 
+            """
+                TODO:
+                    Do road_a.y para o road_b.y, faz um for linha e linha e o lerp será apenas a largura
+            """
+
             pygame.draw.line(screen, ColorPalette.ROAD, (road_a.left_road, road_a.y), (road_a.right_road, road_a.y))
 
             self.render_border(
@@ -173,7 +178,7 @@ class RacingRenderer(IRender):
 
         #logging.info(f"period: {period}")
 
-        logging.info(f"road_a.y: {road_a.y} - road_b.y: {road_b.y}")
+        #logging.info(f"road_a.y: {road_a.y} - road_b.y: {road_b.y}")
 
         wave = MathTools.rectangular_wave(visable_distance + self.center_screen_y, period, duty=0.5)
 

@@ -25,10 +25,11 @@ class RacingSegment():
 
     def interpolate(self, next: Self) -> List["SubRacingSegment"]:
         """
-            Interpola o segmento atual com o próximo segmento, criando sub-segmentos entre eles.
-            - next: próximo segmento a ser interpolado
+            Interpolates the current segment with the next segment, creating sub-segments between them.
 
-            Retorna uma lista de SubRacingSegment interpolados
+            next: the next segment to be interpolated
+
+            Returns a list of interpolated SubRacingSegment objects.
         """
         sub_racing_segment_interpolated: List["SubRacingSegment"] = []
 
@@ -49,8 +50,8 @@ class RacingSegment():
         return sub_racing_segment_interpolated
 
 """
-    Classe 'SubRacingSegment' é apenas uma classe alias da 'RacingSegment', seu comportamento 
-    é idêntico ao 'RacingSegment', mas é usada para diferenciar os segmentos completos dos segmentos nodes
+    The SubRacingSegment class is simply an alias of RacingSegment.
+    Its behavior is identical to RacingSegment, but it is used to distinguish full segments from node segments.
 """
 class SubRacingSegment(RacingSegment):
     def __init__(self,

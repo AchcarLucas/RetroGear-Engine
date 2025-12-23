@@ -49,8 +49,8 @@ class RacingRenderer(IRender):
         """
         Update the renderer state.
         """
-        #self.camera_distance -= delta_time * 100  # Example speed
-        self.camera_distance = 450
+        self.camera_distance -= delta_time * 100  # Example speed
+        # self.camera_distance = 450
         self.camera_distance = self.camera_distance % self.racing_track.get_max_distance()
 
         self.time += delta_time
@@ -113,6 +113,8 @@ class RacingRenderer(IRender):
 
             road_a: RacingRoad = self.project(segment_a, visable_distance)
             road_b: RacingRoad = self.project(segment_b, visable_distance + 1)
+
+            # logging.info(f"road_a.y: {road_a.y} - road_b.y: {road_b.y}")
 
             '''
             self.render_road(

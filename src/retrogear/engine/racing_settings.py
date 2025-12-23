@@ -11,7 +11,7 @@ logging = locator.get_locator('logging')
 class RacingSettings():
     DEPTH_FACTOR = 0.02
 
-    PERSPECTIVE_OFFSET = 4.0
+    PERSPECTIVE_OFFSET = 10.0
     PERSPECTIVE_RATIO = 0.25
 
     MAX_VISIBLE_DISTANCE = env.SCREEN_HEIGHT // 2

@@ -9,4 +9,6 @@ class ColorPalette():
     SKY = (135, 206, 235)
     GRASS = (16, 200, 16)
     ROAD = (50, 50, 50)
-    LANE = (255, 255, 255)
+
+    LANE_BORDER_A = (255, 255, 255)
+    LANE_BORDER_B = (255, 0, 0)

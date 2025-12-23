@@ -1,4 +1,4 @@
-class InterpolatorTools():
+class MathTools():
     @staticmethod
     def lerp(start, end, t):
         return start + (end - start) * t
@@ -15,10 +15,19 @@ class InterpolatorTools():
     
     @staticmethod
     def smoothstep(start, end, t):
-        t = InterpolatorTools.clamp((t - start) / (end - start), 0.0, 1.0)
+        t = MathTools.clamp((t - start) / (end - start), 0.0, 1.0)
         return t * t * (3 - 2 * t)
     
     @staticmethod
     def smootherstep(start, end, t):
-        t = InterpolatorTools.clamp((t - start) / (end - start), 0.0, 1.0)
+        t = MathTools.clamp((t - start) / (end - start), 0.0, 1.0)
         return t * t * t * (t * (t * 6 - 15) + 10)
+    
+    @staticmethod
+    def rectangular_wave(t: float, p: float, duty: float):
+        """
+            t     : time (float ou array)
+            p     : period
+            duty : duty cycle (0 a 1)
+        """
+        return (t % p) < (duty * p)

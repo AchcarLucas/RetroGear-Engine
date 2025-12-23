@@ -1,6 +1,6 @@
 from typing import Self, List
 
-from src.retrogear.utils.interpolator_tools import InterpolatorTools
+from src.retrogear.utils.math_tools import MathTools
 from src.manager.locator_manager import LocatorManager
 
 locator = LocatorManager()
@@ -35,9 +35,9 @@ class RacingSegment():
 
         for i in range(1, self.racing_length):
             t = i / (self.racing_length)
-            racing_width_factor = InterpolatorTools.lerp(self.racing_width_factor, next.racing_width_factor, t)
-            racing_curve_factor = InterpolatorTools.lerp(self.racing_curve_factor, next.racing_curve_factor, t)
-            racing_elevation_factor = InterpolatorTools.lerp(self.racing_elevation_factor, next.racing_elevation_factor, t)
+            racing_width_factor = MathTools.lerp(self.racing_width_factor, next.racing_width_factor, t)
+            racing_curve_factor = MathTools.lerp(self.racing_curve_factor, next.racing_curve_factor, t)
+            racing_elevation_factor = MathTools.lerp(self.racing_elevation_factor, next.racing_elevation_factor, t)
 
             sub_racing_segment = SubRacingSegment(
                 racing_width_factor=racing_width_factor,

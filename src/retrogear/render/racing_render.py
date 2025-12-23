@@ -8,6 +8,7 @@ from src.retrogear.interface.render_interface import IRender
 
 from src.retrogear.engine.racing_track import RacingTrack
 from src.retrogear.engine.racing_settings import RacingSettings
+from src.retrogear.engine.racing_road import RacingRoad
 
 from src.retrogear.utils.color_palette import ColorPalette
 
@@ -62,7 +63,7 @@ class RacingRenderer(IRender):
             self, 
             segment: RacingTrack,
             distance: float
-        ) -> (float, float, float): # type: ignore
+        ) -> RacingRoad:
         perspective = self.depth * (distance + RacingSettings.PERSPECTIVE_OFFSET)
         inverse_perspective = 1.0 / perspective
 
@@ -76,7 +77,7 @@ class RacingRenderer(IRender):
         left_road = int(screen_x - road_width) + self.camera_offset
         right_road = int(screen_x + road_width) + self.camera_offset
 
-        return (left_road, right_road, y)
+        return RacingRoad(left_road, right_road, y)
 
     def render(self, screen):
         """
@@ -94,14 +95,28 @@ class RacingRenderer(IRender):
             segment_a = self.racing_track.get_racing_sub_segment(distance=current_distance)
             segment_b = self.racing_track.get_racing_sub_segment(distance=current_distance + 1)
 
-            (left_road_a, right_road_a, y_a) = self.perspective(segment_a, visable_distance)
-            (left_road_b, right_road_b, y_b) = self.perspective(segment_b, visable_distance + 1)
+            road_a: RacingRoad = self.perspective(segment_a, visable_distance)
+            road_b: RacingRoad = self.perspective(segment_b, visable_distance + 1)
 
             points = [
-                (left_road_a, y_a),
-                (right_road_a, y_a),
-                (right_road_b, y_b),
-                (left_road_b, y_b)
+                (road_a.left_road, road_a.y),
+                (road_a.right_road, road_a.y),
+                (road_b.right_road, road_b.y),
+                (road_b.left_road, road_b.y)
             ]
 
             pygame.draw.polygon(screen, ColorPalette.ROAD, points)
+
+    def render_road(self,
+                    screen,
+                    road_a: RacingRoad,
+                    road_b: RacingRoad
+        ):
+        pass
+
+    def render_border(self,
+                      screen,
+                      road_a: RacingRoad,
+                      road_b: RacingRoad
+        ):
+        pass

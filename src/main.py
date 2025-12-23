@@ -24,12 +24,12 @@ locator.add_locator('logging', logging)
 
 #################################################
 
-from src.retrogear.engine.retrogear_engine import RetroGearEngine
+from src.retrogear.render.retrogear_render import RetroGearRender
 
 if __name__ == "__main__":
     logging.info("RetroGear - Engine (POC)")
 
-    engine = RetroGearEngine(
+    engine = RetroGearRender(
         env.CAPTION,
         env.SCREEN_WIDTH,
         env.SCREEN_HEIGHT,

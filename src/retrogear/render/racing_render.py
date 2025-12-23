@@ -35,9 +35,11 @@ class RacingRenderer(IRender):
 
         self.depth = (self.center_screen_y / RacingSettings.MAX_VISIBLE_DISTANCE) * RacingSettings.DEPTH_FACTOR
 
-    def set_racing_track(self, racing_track: RacingTrack):
+    def set_racing_track(self,
+                         racing_track: RacingTrack
+        ):
         """
-        Set the racing track to be rendered.
+            Set the racing track to be rendered.
         """
         self.racing_track = racing_track
 
@@ -50,15 +52,17 @@ class RacingRenderer(IRender):
 
         self.time += delta_time
 
-        # self.camera_offset = 150 * math.sin(self.time) # Example offset oscillation
-
     def event(self, event):
         """
-        Handle events.
+            Handle events.
         """
         pass
 
-    def perspective(self, segment: RacingTrack, distance: float) -> (float, float, float):
+    def perspective(
+            self, 
+            segment: RacingTrack,
+            distance: float
+        ) -> (float, float, float): # type: ignore
         perspective = self.depth * (distance + RacingSettings.PERSPECTIVE_OFFSET)
         inverse_perspective = 1.0 / perspective
 
@@ -76,7 +80,7 @@ class RacingRenderer(IRender):
 
     def render(self, screen):
         """
-        Render the racing track.
+            Render the racing track.
         """
         if self.racing_track is None:
             return

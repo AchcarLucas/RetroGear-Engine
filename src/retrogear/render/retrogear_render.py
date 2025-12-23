@@ -38,7 +38,9 @@ class RetroGearRender(IRender):
         self.test()
 
     def init(self):
-        # inicialização do pygame
+        '''
+            Pygame initialization
+        '''
         pygame.init()
 
         logging.info(f"screen_width: {self.screen_width}")
@@ -62,7 +64,7 @@ class RetroGearRender(IRender):
 
     def test(self):
         '''
-            método de teste da engine
+            Engine testing method
         '''
         self.racing_render = RacingRenderer()
 
@@ -113,7 +115,7 @@ class RetroGearRender(IRender):
 
     def run(self):
         '''
-            loop principal da engine
+            Main Loop
         '''
         self.running = True
 
@@ -138,7 +140,7 @@ class RetroGearRender(IRender):
 
     def event(self, event):
         '''
-            gerenciamento de event da engine
+            Engine event management
         '''
         if(event.type == pygame.QUIT):
             self.running = False
@@ -148,13 +150,13 @@ class RetroGearRender(IRender):
 
     def update(self, delta_time):
         '''
-            gerenciamento da lógica da engine
+            Engine logic management
         '''
         self.racing_render.update(delta_time)
 
     def render(self):
         '''
-            gerenciamento da renderização da engine
+            Engine rendering management
         '''
         self.screen.fill(ColorPalette.BG_COLOR)
 

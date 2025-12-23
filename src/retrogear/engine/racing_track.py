@@ -16,13 +16,13 @@ logging = locator.get_locator('logging')
 
 class RacingTrack():
     def __init__(self, 
-                 racing_segments: List[RacingSegment] = [],
+                 racing_segments: List[RacingSegment] = None,
         ):
         """
-            - racing_segment são os segmentos nodes da pista
-            - racing_track são os segmentos completos, incluindo os sub-segmentos entre os segmentos nodes
+            - 'racing_segment' refers to the node segments of the track
+            - 'racing_track' refers to the full segments of the track, including the sub-segments between the node segments
         """
-        self.racing_segments = racing_segments
+        self.racing_segments = [] if racing_segments is None else racing_segments
 
         self.racing_track: List[SubRacingSegment] = []
 
@@ -43,7 +43,7 @@ class RacingTrack():
 
     def generate_racing_track(self):
         """
-            Método para gerar a pista completa com sub-segmentos interpolados
+            Method to generate the complete track with interpolated sub-segments.
         """
         self.racing_track: List[SubRacingSegment] = []
 

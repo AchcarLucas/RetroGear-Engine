@@ -168,7 +168,7 @@ class RetroGearRender(IRender):
 
     def event(self, event):
         '''
-            Engine event management
+            Event management method
         '''
         if(event.type == pygame.QUIT):
             self.running = False
@@ -180,13 +180,13 @@ class RetroGearRender(IRender):
 
     def update(self, delta_time):
         '''
-            Engine logic management
+            Logic management method
         '''
         self.racing_render.update(delta_time)
 
     def render(self):
         '''
-            Engine rendering management
+            Rendering management method
         '''
         self.screen.fill(ColorPalette.BG_COLOR)
 

@@ -84,9 +84,9 @@ class RacingRenderer(IRender):
         return RacingRoad(left_road, right_road, y)
 
     def event(self, event):
-        """
-            Handle events.
-        """
+        '''
+            Event management method
+        '''
         pass
 
     def update(self, delta_time: float):
@@ -106,7 +106,7 @@ class RacingRenderer(IRender):
 
     def render(self, screen):
         """
-            Render the racing track.
+            Render the racing method.
         """
         if self.racing_track is None:
             return

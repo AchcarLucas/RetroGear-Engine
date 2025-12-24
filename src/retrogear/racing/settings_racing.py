@@ -8,7 +8,7 @@ env = locator.get_locator('env')
 # getting logging manager
 logging = locator.get_locator('logging')
 
-class RacingSettings():
+class SettingsRacing():
     DEPTH_FACTOR = 0.02
 
     PERSPECTIVE_OFFSET = 10.0

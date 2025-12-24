@@ -10,7 +10,7 @@ env = locator.get_locator('env')
 # getting logging manager
 logging = locator.get_locator('logging')
 
-class RacingRoad():
+class RoadRacing():
     def __init__(self,
              left_road,
              right_road,

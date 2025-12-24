@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class IRender(ABC):
+class IEngine(ABC):
     @abstractmethod
     def event(self, event):
         raise NotImplementedError("Method event not implemented")

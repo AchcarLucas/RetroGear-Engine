@@ -11,7 +11,7 @@ env = locator.get_locator('env')
 # getting logging manager
 logging = locator.get_locator('logging')
 
-class RacingSegment():
+class SegmentRacing():
     def __init__(self,
                  racing_length : int,
                  racing_width_factor : float,
@@ -23,18 +23,18 @@ class RacingSegment():
         self.racing_curve_factor = racing_curve_factor
         self.racing_elevation_factor = racing_elevation_factor
 
-    def interpolate(self, next: Self) -> List["SubRacingSegment"]:
+    def interpolate(self, next: Self) -> List["SubSegmentRacing"]:
         """
             Interpolates the current segment with the next segment, creating sub-segments between them.
 
             next: the next segment to be interpolated
 
-            Returns a list of interpolated SubRacingSegment objects.
+            Returns a list of interpolated SubSegmentRacing objects.
         """
-        sub_racing_segment_interpolated: List["SubRacingSegment"] = []
+        sub_racing_segment_interpolated: List["SubSegmentRacing"] = []
 
         for i in range(0, self.racing_length):
-            sub_racing_segment = SubRacingSegment(
+            sub_racing_segment = SubSegmentRacing(
                 racing_width_factor=self.racing_width_factor,
                 racing_curve_factor=self.racing_curve_factor,
                 racing_elevation_factor=self.racing_elevation_factor
@@ -45,10 +45,10 @@ class RacingSegment():
         return sub_racing_segment_interpolated
 
 """
-    The SubRacingSegment class is simply an alias of RacingSegment.
-    Its behavior is identical to RacingSegment, but it is used to distinguish full segments from node segments.
+    The SubSegmentRacing class is simply an alias of SegmentRacing.
+    Its behavior is identical to SegmentRacing, but it is used to distinguish full segments from node segments.
 """
-class SubRacingSegment(RacingSegment):
+class SubSegmentRacing(SegmentRacing):
     def __init__(self,
                  racing_width_factor : float,
                  racing_curve_factor : float,
@@ -61,7 +61,7 @@ class SubRacingSegment(RacingSegment):
         )
 
     @classmethod
-    def from_parent(cls, parent: RacingSegment):
+    def from_parent(cls, parent: SegmentRacing):
         return cls(
             racing_width_factor=parent.racing_width_factor,
             racing_curve_factor=parent.racing_curve_factor,

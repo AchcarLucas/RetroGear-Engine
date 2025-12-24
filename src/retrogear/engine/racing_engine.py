@@ -1,15 +1,11 @@
-"""
-Docstring for render_racing
-"""
-
 import pygame
 
-from src.retrogear.interface.render_interface import IRender
+from src.retrogear.interface.engine_interface import IEngine
 
-from src.retrogear.engine.racing_track import RacingTrack
-from src.retrogear.engine.racing_segment import SubRacingSegment
-from src.retrogear.engine.racing_settings import RacingSettings
-from src.retrogear.engine.racing_road import RacingRoad
+from src.retrogear.racing.track_racing import TrackRacing
+from src.retrogear.racing.segment_racing import SubSegmentRacing
+from src.retrogear.racing.settings_racing import SettingsRacing
+from src.retrogear.racing.road_racing import RoadRacing
 
 from src.retrogear.utils.color_palette import ColorPalette
 from src.retrogear.utils.math_tools import MathTools
@@ -24,17 +20,17 @@ env = locator.get_locator('env')
 # getting logging manager
 logging = locator.get_locator('logging')
 
-class RacingRenderer(IRender):
-    def __init__(self, racing_track: RacingTrack=None):
+class RacingEngine(IEngine):
+    def __init__(self, racing_track: TrackRacing=None):
         self.racing_track = racing_track
 
         self.center_screen_x: int = env.SCREEN_WIDTH // 2
         self.center_screen_y: int = env.SCREEN_HEIGHT // 2
 
-        self.depth: float = (self.center_screen_y / RacingSettings.MAX_VISIBLE_DISTANCE) * RacingSettings.DEPTH_FACTOR
+        self.depth: float = (self.center_screen_y / SettingsRacing.MAX_VISIBLE_DISTANCE) * SettingsRacing.DEPTH_FACTOR
 
-        self.current_segment: SubRacingSegment = None
-        self.previous_segment: SubRacingSegment = None
+        self.current_segment: SubSegmentRacing = None
+        self.previous_segment: SubSegmentRacing = None
 
         self.camera_distance: float = 0
         self.camera_offset: float =  0
@@ -43,7 +39,7 @@ class RacingRenderer(IRender):
         self.elevator_accumulator: float = 0
 
     def set_racing_track(self,
-                         racing_track: RacingTrack
+                         racing_track: TrackRacing
         ):
         """
             Set the racing track to be rendered.
@@ -52,14 +48,14 @@ class RacingRenderer(IRender):
 
     @property
     def minimum_y(self):
-        return (RacingSettings.BETWEEN_LINE * RacingSettings.MAX_VISIBLE_DISTANCE) + self.center_screen_y
+        return (SettingsRacing.BETWEEN_LINE * SettingsRacing.MAX_VISIBLE_DISTANCE) + self.center_screen_y
 
     @property
     def maximum_y(self):
         return self.center_screen_y
 
     def perspective(self, distance: float):
-        return self.depth * (distance + RacingSettings.PERSPECTIVE_OFFSET)
+        return self.depth * (distance + SettingsRacing.PERSPECTIVE_OFFSET)
 
     def project(
             self,
@@ -67,21 +63,21 @@ class RacingRenderer(IRender):
             offset_x: int,
             curve_accumulator: int,
             elevator_accumulator: int
-        ) -> RacingRoad:
+        ) -> RoadRacing:
         perspective = self.perspective(distance)
         inverse_perspective = 1.0 / perspective
 
         screen_x = self.center_screen_x + (curve_accumulator * inverse_perspective)
         screen_y = self.center_screen_y + (elevator_accumulator * inverse_perspective)
 
-        road_width = (env.SCREEN_WIDTH * RacingSettings.PERSPECTIVE_RATIO) * perspective
+        road_width = (env.SCREEN_WIDTH * SettingsRacing.PERSPECTIVE_RATIO) * perspective
 
-        y = int(RacingSettings.BETWEEN_LINE * distance) + screen_y
+        y = int(SettingsRacing.BETWEEN_LINE * distance) + screen_y
 
         left_road = int(screen_x - road_width) + offset_x
         right_road = int(screen_x + road_width) + offset_x
 
-        return RacingRoad(left_road, right_road, y)
+        return RoadRacing(left_road, right_road, y)
 
     def event(self, event):
         '''
@@ -129,16 +125,16 @@ class RacingRenderer(IRender):
         # logging.info(f"self.curve_accumulator {self.curve_accumulator} - self.elevator_accumulator: {self.elevator_accumulator} - self.camera_distance: {self.camera_distance}")
 
         # render the road
-        for visible_distance in range(0, RacingSettings.MAX_VISIBLE_DISTANCE):
+        for visible_distance in range(0, SettingsRacing.MAX_VISIBLE_DISTANCE):
             current_distance = visible_distance + self.camera_distance
 
-            road_a: RacingRoad = self.project(distance=visible_distance,
+            road_a: RoadRacing = self.project(distance=visible_distance,
                                               offset_x=self.camera_offset,
                                               curve_accumulator=self.curve_accumulator,
                                               elevator_accumulator=self.elevator_accumulator
                                             )
 
-            road_b: RacingRoad = self.project(distance=visible_distance + 1,
+            road_b: RoadRacing = self.project(distance=visible_distance + 1,
                                               offset_x=self.camera_offset,
                                               curve_accumulator=self.curve_accumulator,
                                               elevator_accumulator=self.elevator_accumulator
@@ -181,8 +177,8 @@ class RacingRenderer(IRender):
                     screen,
                     visible_distance: float,
                     current_distance: float,
-                    road_a: RacingRoad,
-                    road_b: RacingRoad
+                    road_a: RoadRacing,
+                    road_b: RoadRacing
         ):
         points = [
             (road_a.left_road, road_a.y),
@@ -197,11 +193,11 @@ class RacingRenderer(IRender):
                       screen,
                       visible_distance: float,
                       current_distance: float,
-                      road_a: RacingRoad,
-                      road_b: RacingRoad
+                      road_a: RoadRacing,
+                      road_b: RoadRacing
         ):
-        road_factor_a = road_a.road_width * RacingSettings.LANE_BORDER_RATIO
-        road_factor_b = road_b.road_width * RacingSettings.LANE_BORDER_RATIO
+        road_factor_a = road_a.road_width * SettingsRacing.LANE_BORDER_RATIO
+        road_factor_b = road_b.road_width * SettingsRacing.LANE_BORDER_RATIO
 
         perspective = self.perspective(visible_distance)
         inverse_perspective = 1 / perspective

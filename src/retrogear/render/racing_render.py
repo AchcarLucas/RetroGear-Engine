@@ -91,7 +91,7 @@ class RacingRenderer(IRender):
 
         road_width = (env.SCREEN_WIDTH * RacingSettings.PERSPECTIVE_RATIO) * perspective
 
-        y = (RacingSettings.BETWEEN_LINE * distance) + screen_y
+        y = int(RacingSettings.BETWEEN_LINE * distance) + screen_y
 
         left_road = int(screen_x - road_width) + offset_x
         right_road = int(screen_x + road_width) + offset_x

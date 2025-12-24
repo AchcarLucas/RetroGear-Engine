@@ -7,6 +7,7 @@ import pygame
 from src.retrogear.interface.render_interface import IRender
 
 from src.retrogear.engine.racing_track import RacingTrack
+from src.retrogear.engine.racing_segment import SubRacingSegment
 from src.retrogear.engine.racing_settings import RacingSettings
 from src.retrogear.engine.racing_road import RacingRoad
 
@@ -27,18 +28,19 @@ class RacingRenderer(IRender):
     def __init__(self, racing_track: RacingTrack=None):
         self.racing_track = racing_track
 
-        self.time = 0
+        self.center_screen_x: int = env.SCREEN_WIDTH // 2
+        self.center_screen_y: int = env.SCREEN_HEIGHT // 2
 
-        self.camera_distance = 0
-        self.camera_offset =  0
+        self.depth: float = (self.center_screen_y / RacingSettings.MAX_VISIBLE_DISTANCE) * RacingSettings.DEPTH_FACTOR
 
-        self.curve_accumulator = 0
-        self.elevator_accumulator = 0
+        self.current_segment: SubRacingSegment = None
+        self.previous_segment: SubRacingSegment = None
 
-        self.center_screen_x = env.SCREEN_WIDTH // 2
-        self.center_screen_y = env.SCREEN_HEIGHT // 2
+        self.camera_distance: float = 0
+        self.camera_offset: float =  0
 
-        self.depth = (self.center_screen_y / RacingSettings.MAX_VISIBLE_DISTANCE) * RacingSettings.DEPTH_FACTOR
+        self.curve_accumulator: float = 0
+        self.elevator_accumulator: float = 0
 
     def set_racing_track(self,
                          racing_track: RacingTrack
@@ -52,14 +54,16 @@ class RacingRenderer(IRender):
         """
         Update the renderer state.
         """
-        self.camera_distance += 1
-        self.camera_distance = int(self.camera_distance) % self.racing_track.get_max_distance()
+        previous_camera_distance = self.camera_distance
 
-        if self.camera_distance == 0:
+        self.camera_distance += (delta_time * 100.0)
+        self.camera_distance %= self.racing_track.get_max_distance()
+
+        # a reset occurred, reset the accumulators and the camera distance to remove any residue.
+        if previous_camera_distance > self.camera_distance:
+            self.camera_distance = 0
             self.curve_accumulator = 0
             self.elevator_accumulator = 0
-
-        self.time += delta_time
 
     @property
     def minimum_y(self):
@@ -113,15 +117,18 @@ class RacingRenderer(IRender):
         pygame.draw.line(screen, (255, 255, 255), (0, self.center_screen_y), (env.SCREEN_WIDTH, self.center_screen_y))
 
         # get the segment related to the camera.
-        segment = self.racing_track.get_racing_sub_segment(distance=self.camera_distance)
+        self.current_segment = self.racing_track.get_racing_sub_segment(distance=self.camera_distance)
 
         # curve and elevator integration along the camera segment
-        self.curve_accumulator += segment.racing_curve_factor
-        self.elevator_accumulator += segment.racing_elevation_factor
+        # if we're still in the same segment, we're not going to increase it again.
+        if self.current_segment != self.previous_segment:
+            self.curve_accumulator += self.current_segment.racing_curve_factor
+            self.elevator_accumulator += self.current_segment.racing_elevation_factor
+            self.previous_segment = self.current_segment
 
-        print(f"self.curve_accumulator {self.curve_accumulator} - self.elevator_accumulator: {self.elevator_accumulator} - self.camera_distance: {self.camera_distance}")
+        # logging.info(f"self.curve_accumulator {self.curve_accumulator} - self.elevator_accumulator: {self.elevator_accumulator} - self.camera_distance: {self.camera_distance}")
 
-        # Render the road
+        # render the road
         for visible_distance in range(0, RacingSettings.MAX_VISIBLE_DISTANCE):
             current_distance = visible_distance + self.camera_distance
 

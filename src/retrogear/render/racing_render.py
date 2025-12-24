@@ -69,31 +69,28 @@ class RacingRenderer(IRender):
     def maximum_y(self):
         return self.center_screen_y
 
-    def perspective(self, visable_distance: float):
-        return self.depth * (visable_distance + RacingSettings.PERSPECTIVE_OFFSET)
+    def perspective(self, distance: float):
+        return self.depth * (distance + RacingSettings.PERSPECTIVE_OFFSET)
 
     def project(
-            self, 
-            segment: RacingTrack,
-            visable_distance: float
+            self,
+            distance: int,
+            offset_x: int,
+            curve_accumulator: int,
+            elevator_accumulator: int
         ) -> RacingRoad:
-        perspective = self.perspective(visable_distance)
+        perspective = self.perspective(distance)
         inverse_perspective = 1.0 / perspective
 
-        """
-            TODO
-                Acumular curve e elevation para evitar drift lateral e de elevação
-        """
-
-        screen_x = self.center_screen_x + (self.curve_accumulator * inverse_perspective)
-        screen_y = self.center_screen_y + (self.elevator_accumulator * inverse_perspective)
+        screen_x = self.center_screen_x + (curve_accumulator * inverse_perspective)
+        screen_y = self.center_screen_y + (elevator_accumulator * inverse_perspective)
 
         road_width = (env.SCREEN_WIDTH * RacingSettings.PERSPECTIVE_RATIO) * perspective
 
-        y = (RacingSettings.BETWEEN_LINE * visable_distance) + screen_y
+        y = (RacingSettings.BETWEEN_LINE * distance) + screen_y
 
-        left_road = int(screen_x - road_width) + self.camera_offset
-        right_road = int(screen_x + road_width) + self.camera_offset
+        left_road = int(screen_x - road_width) + offset_x
+        right_road = int(screen_x + road_width) + offset_x
 
         return RacingRoad(left_road, right_road, y)
 
@@ -125,14 +122,20 @@ class RacingRenderer(IRender):
         print(f"self.curve_accumulator {self.curve_accumulator} - self.elevator_accumulator: {self.elevator_accumulator} - self.camera_distance: {self.camera_distance}")
 
         # Render the road
-        for visable_distance in range(0, RacingSettings.MAX_VISIBLE_DISTANCE):
-            current_distance = visable_distance + self.camera_distance
+        for visible_distance in range(0, RacingSettings.MAX_VISIBLE_DISTANCE):
+            current_distance = visible_distance + self.camera_distance
 
-            segment_a = self.racing_track.get_racing_sub_segment(distance=current_distance)
-            segment_b = self.racing_track.get_racing_sub_segment(distance=current_distance + 1)
+            road_a: RacingRoad = self.project(distance=visible_distance,
+                                              offset_x=self.camera_offset,
+                                              curve_accumulator=self.curve_accumulator,
+                                              elevator_accumulator=self.elevator_accumulator
+                                            )
 
-            road_a: RacingRoad = self.project(segment_a, visable_distance)
-            road_b: RacingRoad = self.project(segment_b, visable_distance + 1)
+            road_b: RacingRoad = self.project(distance=visible_distance + 1,
+                                              offset_x=self.camera_offset,
+                                              curve_accumulator=self.curve_accumulator,
+                                              elevator_accumulator=self.elevator_accumulator
+                                            )
 
             # logging.info(f"road_a.y: {road_a.y} - road_b.y: {road_b.y}")
 
@@ -161,7 +164,7 @@ class RacingRenderer(IRender):
 
             self.render_border(
                 screen,
-                visable_distance,
+                visible_distance,
                 current_distance,
                 road_a,
                 road_b
@@ -169,7 +172,7 @@ class RacingRenderer(IRender):
 
     def render_road(self,
                     screen,
-                    visable_distance: float,
+                    visible_distance: float,
                     current_distance: float,
                     road_a: RacingRoad,
                     road_b: RacingRoad
@@ -185,7 +188,7 @@ class RacingRenderer(IRender):
 
     def render_border(self,
                       screen,
-                      visable_distance: float,
+                      visible_distance: float,
                       current_distance: float,
                       road_a: RacingRoad,
                       road_b: RacingRoad
@@ -193,7 +196,7 @@ class RacingRenderer(IRender):
         road_factor_a = road_a.road_width * RacingSettings.LANE_BORDER_RATIO
         road_factor_b = road_b.road_width * RacingSettings.LANE_BORDER_RATIO
 
-        perspective = self.perspective(visable_distance)
+        perspective = self.perspective(visible_distance)
         inverse_perspective = 1 / perspective
 
         period = 50.0 / (inverse_perspective * 2.5)
@@ -202,9 +205,9 @@ class RacingRenderer(IRender):
 
         #logging.info(f"road_a.y: {road_a.y} - road_b.y: {road_b.y}")
 
-        wave = MathTools.rectangular_wave(visable_distance + self.center_screen_y, period, duty=0.5)
+        wave = MathTools.rectangular_wave(visible_distance + self.center_screen_y, period, duty=0.5)
 
-        #logging.info(visable_distance + self.center_screen_y)
+        #logging.info(visible_distance + self.center_screen_y)
 
         if wave:
             border_color = ColorPalette.LANE_BORDER_A

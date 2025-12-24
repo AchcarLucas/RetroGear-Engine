@@ -70,24 +70,52 @@ class RetroGearRender(IRender):
 
         racing_segment_list = []
 
-        # inicio do segmento
+        # beginning of the segment
         racing_segment_list.append(RacingSegment(1, 1.0, 0.0, 0.0))
-        # segmentos intermediários
-        racing_segment_list.append(RacingSegment(20, 1.0, 0.0, 0.0))
-        # racing_segment_list.append(RacingSegment(30, 1.0, 50.0, 0.0))
-        racing_segment_list.append(RacingSegment(30, 1.0, 100.0, 0.0))
-        racing_segment_list.append(RacingSegment(30, 1.0, 100.0, 0.0))
-        racing_segment_list.append(RacingSegment(30, 1.0, -100.0, 0.0))
-        racing_segment_list.append(RacingSegment(30, 1.0, -100.0, 0.0))
-        racing_segment_list.append(RacingSegment(30, 1.0, 0.0, 100.0))
-        racing_segment_list.append(RacingSegment(30, 1.0, 0.0, 100.0))
-        racing_segment_list.append(RacingSegment(30, 1.0, 0.0, -60.0))
-        racing_segment_list.append(RacingSegment(30, 1.0, 0.0, -60.0))
-        # racing_segment_list.append(RacingSegment(30, 1.0, -50.0, 0.0))
-        # racing_segment_list.append(RacingSegment(30, 1.0, -50.0, 0.0))
-        # racing_segment_list.append(RacingSegment(50, 1.0, 0.0, 0.0))
+
+        # intermediate segments
         racing_segment_list.append(RacingSegment(50, 1.0, 0.0, 0.0))
-        # final do segmento
+
+        # right and back
+        racing_segment_list.append(RacingSegment(30, 1.0, 1.0, 0.0))
+        racing_segment_list.append(RacingSegment(30, 1.0, -1.0, 0.0))
+        # right and back
+        racing_segment_list.append(RacingSegment(40, 1.0, 1.0, 0.0))
+        racing_segment_list.append(RacingSegment(40, 1.0, -1.0, 0.0))
+        # right and back
+        racing_segment_list.append(RacingSegment(80, 1.0, 1.0, 0.0))
+        racing_segment_list.append(RacingSegment(80, 1.0, -1.0, 0.0))
+
+        # left and back
+        racing_segment_list.append(RacingSegment(30, 1.0, -1.0, 0.0))
+        racing_segment_list.append(RacingSegment(30, 1.0, 1.0, 0.0))
+        # left and back
+        racing_segment_list.append(RacingSegment(50, 1.0, -1.0, 0.0))
+        racing_segment_list.append(RacingSegment(50, 1.0, 1.0, 0.0))
+        # left and back
+        racing_segment_list.append(RacingSegment(80, 1.0, -1.0, 0.0))
+        racing_segment_list.append(RacingSegment(80, 1.0, 1.0, 0.0))
+
+        # down and back
+        racing_segment_list.append(RacingSegment(20, 1.0, 0.0, 1.0))
+        racing_segment_list.append(RacingSegment(20, 1.0, 0.0, -1.0))
+
+        # up and back
+        racing_segment_list.append(RacingSegment(40, 1.0, 0.0, -1.0))
+        racing_segment_list.append(RacingSegment(40, 1.0, 0.0, 1.0))
+
+        # down/left and back
+        racing_segment_list.append(RacingSegment(60, 1.0, -1.0, 1.0))
+        racing_segment_list.append(RacingSegment(60, 1.0, 1.0, -1.0))
+
+        # up/left and back
+        racing_segment_list.append(RacingSegment(60, 1.0, -1.0, -1.0))
+        racing_segment_list.append(RacingSegment(60, 1.0, 1.0, 1.0))
+
+        # intermediate segments
+        racing_segment_list.append(RacingSegment(50, 1.0, 0.0, 0.0))
+
+        # end of segments
         racing_segment_list.append(RacingSegment(1, 1.0, 0.0, 0.0))
 
         self.racing_track = RacingTrack(

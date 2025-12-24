@@ -33,16 +33,11 @@ class RacingSegment():
         """
         sub_racing_segment_interpolated: List["SubRacingSegment"] = []
 
-        for i in range(1, self.racing_length):
-            t = i / (self.racing_length)
-            racing_width_factor = MathTools.lerp(self.racing_width_factor, next.racing_width_factor, t)
-            racing_curve_factor = MathTools.lerp(self.racing_curve_factor, next.racing_curve_factor, t)
-            racing_elevation_factor = MathTools.lerp(self.racing_elevation_factor, next.racing_elevation_factor, t)
-
+        for i in range(0, self.racing_length):
             sub_racing_segment = SubRacingSegment(
-                racing_width_factor=racing_width_factor,
-                racing_curve_factor=racing_curve_factor,
-                racing_elevation_factor=racing_elevation_factor
+                racing_width_factor=self.racing_width_factor,
+                racing_curve_factor=self.racing_curve_factor,
+                racing_elevation_factor=self.racing_elevation_factor
             )
 
             sub_racing_segment_interpolated.append(sub_racing_segment)

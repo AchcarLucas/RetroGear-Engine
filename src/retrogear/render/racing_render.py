@@ -32,6 +32,9 @@ class RacingRenderer(IRender):
         self.camera_distance = 0
         self.camera_offset =  0
 
+        self.curve_accumulator = 0
+        self.elevator_accumulator = 0
+
         self.center_screen_x = env.SCREEN_WIDTH // 2
         self.center_screen_y = env.SCREEN_HEIGHT // 2
 
@@ -49,9 +52,12 @@ class RacingRenderer(IRender):
         """
         Update the renderer state.
         """
-        self.camera_distance -= delta_time * 100  # Example speed
-        # self.camera_distance = 450
-        self.camera_distance = self.camera_distance % self.racing_track.get_max_distance()
+        self.camera_distance += 1
+        self.camera_distance = int(self.camera_distance) % self.racing_track.get_max_distance()
+
+        if self.camera_distance == 0:
+            self.curve_accumulator = 0
+            self.elevator_accumulator = 0
 
         self.time += delta_time
 
@@ -79,8 +85,8 @@ class RacingRenderer(IRender):
                 Acumular curve e elevation para evitar drift lateral e de elevação
         """
 
-        screen_x = self.center_screen_x + (segment.racing_curve_factor * inverse_perspective)
-        screen_y = self.center_screen_y + (segment.racing_elevation_factor * inverse_perspective)
+        screen_x = self.center_screen_x + (self.curve_accumulator * inverse_perspective)
+        screen_y = self.center_screen_y + (self.elevator_accumulator * inverse_perspective)
 
         road_width = (env.SCREEN_WIDTH * RacingSettings.PERSPECTIVE_RATIO) * perspective
 
@@ -109,8 +115,15 @@ class RacingRenderer(IRender):
         # center line
         pygame.draw.line(screen, (255, 255, 255), (0, self.center_screen_y), (env.SCREEN_WIDTH, self.center_screen_y))
 
+        segment = self.racing_track.get_racing_sub_segment(distance=self.camera_distance)
+
+        self.curve_accumulator += segment.racing_curve_factor
+        self.elevator_accumulator += segment.racing_elevation_factor
+
+        print(f"self.curve_accumulator {self.curve_accumulator} - self.elevator_accumulator: {self.elevator_accumulator} - self.camera_distance: {self.camera_distance}")
+
         # Render the road
-        for visable_distance in range(0, RacingSettings.MAX_VISIBLE_DISTANCE - 1):
+        for visable_distance in range(0, RacingSettings.MAX_VISIBLE_DISTANCE):
             current_distance = visable_distance + self.camera_distance
 
             segment_a = self.racing_track.get_racing_sub_segment(distance=current_distance)

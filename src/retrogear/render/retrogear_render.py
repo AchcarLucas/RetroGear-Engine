@@ -176,6 +176,8 @@ class RetroGearRender(IRender):
             if(event.key == pygame.K_ESCAPE):
                 self.running = False
 
+        self.racing_render.event(event)
+
     def update(self, delta_time):
         '''
             Engine logic management

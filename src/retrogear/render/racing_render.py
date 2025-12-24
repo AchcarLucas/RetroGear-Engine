@@ -50,21 +50,6 @@ class RacingRenderer(IRender):
         """
         self.racing_track = racing_track
 
-    def update(self, delta_time: float):
-        """
-        Update the renderer state.
-        """
-        previous_camera_distance = self.camera_distance
-
-        self.camera_distance += (delta_time * 100.0)
-        self.camera_distance %= self.racing_track.get_max_distance()
-
-        # a reset occurred, reset the accumulators and the camera distance to remove any residue.
-        if previous_camera_distance > self.camera_distance:
-            self.camera_distance = 0
-            self.curve_accumulator = 0
-            self.elevator_accumulator = 0
-
     @property
     def minimum_y(self):
         return (RacingSettings.BETWEEN_LINE * RacingSettings.MAX_VISIBLE_DISTANCE) + self.center_screen_y
@@ -103,6 +88,21 @@ class RacingRenderer(IRender):
             Handle events.
         """
         pass
+
+    def update(self, delta_time: float):
+        """
+            Update the renderer state.
+        """
+        previous_camera_distance = self.camera_distance
+
+        self.camera_distance += (delta_time * 100.0)
+        self.camera_distance %= self.racing_track.get_max_distance()
+
+        # a reset occurred, reset the accumulators and the camera distance to remove any residue.
+        if previous_camera_distance > self.camera_distance:
+            self.camera_distance = 0
+            self.curve_accumulator = 0
+            self.elevator_accumulator = 0
 
     def render(self, screen):
         """

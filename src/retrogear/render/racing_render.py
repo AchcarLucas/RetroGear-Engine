@@ -115,8 +115,10 @@ class RacingRenderer(IRender):
         # center line
         pygame.draw.line(screen, (255, 255, 255), (0, self.center_screen_y), (env.SCREEN_WIDTH, self.center_screen_y))
 
+        # get the segment related to the camera.
         segment = self.racing_track.get_racing_sub_segment(distance=self.camera_distance)
 
+        # curve and elevator integration along the camera segment
         self.curve_accumulator += segment.racing_curve_factor
         self.elevator_accumulator += segment.racing_elevation_factor
 

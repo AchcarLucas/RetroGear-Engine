@@ -74,6 +74,11 @@ class RacingRenderer(IRender):
         perspective = self.perspective(visable_distance)
         inverse_perspective = 1.0 / perspective
 
+        """
+            TODO
+                Acumular curve e elevation para evitar drift lateral e de elevação
+        """
+
         screen_x = self.center_screen_x + (segment.racing_curve_factor * inverse_perspective)
         screen_y = self.center_screen_y + (segment.racing_elevation_factor * inverse_perspective)
 

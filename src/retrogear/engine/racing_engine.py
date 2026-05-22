@@ -27,14 +27,14 @@ class RacingEngine(IEngine):
         self.center_screen_x: int = env.SCREEN_WIDTH // 2
         self.center_screen_y: int = env.SCREEN_HEIGHT // 2
 
-        self.depth: float = (self.center_screen_y / SettingsRacing.MAX_VISIBLE_DISTANCE) * SettingsRacing.DEPTH_FACTOR
+        self.depth: float = (self.center_screen_y / SettingsRacing.MAX_VISIBLE_SLICE_Z) * SettingsRacing.DEPTH_FACTOR
 
         self.current_segment: SubSegmentRacing = None
         self.previous_segment: SubSegmentRacing = None
 
         self.laps: int = 0
-        self.camera_distance: float = 0.0
-        self.camera_offset: float = 0.0
+        self.camera_z: float = 0.0
+        self.camera_side_offset: float = 0.0
 
         self.speed = SettingsRacing.SPEED_TEST
 
@@ -62,12 +62,12 @@ class RacingEngine(IEngine):
 
     def project(
             self,
-            distance: int,
-            offset_x: int,
+            slice_z: int,
+            side_offset: int,
             curve_accumulator: int,
             elevator_accumulator: int
         ) -> RoadRacing:
-        perspective = self.perspective(distance)
+        perspective = self.perspective(slice_z)
         inverse_perspective = 1.0 / perspective
 
         screen_x = self.center_screen_x + (curve_accumulator * inverse_perspective)
@@ -75,35 +75,31 @@ class RacingEngine(IEngine):
 
         road_width = (env.SCREEN_WIDTH * SettingsRacing.PERSPECTIVE_RATIO) * perspective
 
-        y = int(SettingsRacing.BETWEEN_LINE * distance) + screen_y
+        relative_z = int(SettingsRacing.BETWEEN_LINE * slice_z) + screen_y
 
-        left_road = int(screen_x - road_width) + offset_x
-        right_road = int(screen_x + road_width) + offset_x
+        left_road = int(screen_x - road_width) + side_offset
+        right_road = int(screen_x + road_width) + side_offset
 
-        return RoadRacing(left_road, right_road, y)
+        return RoadRacing(
+            left_road=left_road,
+            right_road=right_road,
+            relative_z=relative_z
+        )
     
     def stripe_wave(self,
+            road: RoadRacing,
             factor:float,
             duty: float,
-            current_distance: float,
-            visible_distance: float,
-            road: RoadRacing
         ) -> bool:
 
-        perspective = self.perspective(visible_distance + road.y)
-        period = perspective * factor
+        perspective = self.perspective(road.absolute_z)
+        period = perspective * 0.25 * 50.0
 
-        """
-        virtual_phase = current_distance * SettingsRacing.WAVE_FACTOR
-        current_phase = (visible_distance + road.y) / period
-        continues_wave = (current_phase - virtual_phase) * 100.0
+        virtual_phase = road.absolute_z / period
+        current_phase = (road.relative_z + road.relative_z) / period
+        continues_wave = (current_phase - virtual_phase)
 
-        return MathTools.rectangular_wave(continues_wave, 1.0, duty=0.5)
-        """
-
-        test = MathTools.rectangular_wave(period, 1.0, duty=duty)
-
-        return test
+        return MathTools.rectangular_wave(continues_wave, 1.0, duty=duty)
 
     def event(self, event):
         '''
@@ -115,15 +111,15 @@ class RacingEngine(IEngine):
         """
             Update the renderer state.
         """
-        previous_camera_distance = self.camera_distance
+        previous_camera_z = self.camera_z
 
-        self.camera_distance += (delta_time * self.speed)
-        self.camera_distance %= self.racing_track.get_max_distance()
+        self.camera_z += (delta_time * self.speed)
+        self.camera_z %= self.racing_track.get_max_distance()
 
         # a reset occurred, reset the accumulators and the camera distance to remove any residue.
-        if previous_camera_distance > self.camera_distance:
+        if previous_camera_z > self.camera_z:
             self.laps += 1
-            self.camera_distance = 0.0
+            self.camera_z = 0.0
             self.curve_accumulator = 0.0
             self.elevator_accumulator = 0.0
 
@@ -140,7 +136,7 @@ class RacingEngine(IEngine):
         pygame.draw.line(screen, (255, 255, 255), (0, self.center_screen_y), (env.SCREEN_WIDTH, self.center_screen_y))
 
         # get the segment related to the camera.
-        self.current_segment = self.racing_track.get_racing_sub_segment(distance=self.camera_distance)
+        self.current_segment = self.racing_track.get_racing_sub_segment(distance=self.camera_z)
 
         # curve and elevator integration along the camera segment
         # if we're still in the same segment, we're not going to increase it again.
@@ -150,102 +146,93 @@ class RacingEngine(IEngine):
             self.previous_segment = self.current_segment
 
         # render the road
-        for visible_distance in range(0, SettingsRacing.MAX_VISIBLE_DISTANCE):
-            current_distance = visible_distance + self.camera_distance
-
-            road_a: RoadRacing = self.project(distance=visible_distance,
-                                              offset_x=self.camera_offset,
+        for slice_z in range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z):
+            road_a: RoadRacing = self.project(slice_z=slice_z,
+                                              side_offset=self.camera_side_offset,
                                               curve_accumulator=self.curve_accumulator,
                                               elevator_accumulator=self.elevator_accumulator
                                             )
 
-            road_b: RoadRacing = self.project(distance=visible_distance + 1,
-                                              offset_x=self.camera_offset,
+            road_b: RoadRacing = self.project(slice_z=slice_z + 1,
+                                              side_offset=self.camera_side_offset,
                                               curve_accumulator=self.curve_accumulator,
                                               elevator_accumulator=self.elevator_accumulator
                                             )
 
             # interpolate the road between road_a and road_b to fill the gap between them.
-            for (y) in range(int(road_a.y), int(road_b.y)):
-                left_road = MathTools.lerp(road_a.left_road, road_b.left_road, (y - road_a.y) / (road_b.y - road_a.y))
-                right_road = MathTools.lerp(road_a.right_road, road_b.right_road, (y - road_a.y) / (road_b.y - road_a.y))
+            for (relative_z) in range(int(road_a.relative_z), int(road_b.relative_z)):
+                t = (relative_z - road_a.relative_z) / (road_b.relative_z - road_a.relative_z)
+                left_road = MathTools.lerp(road_a.left_road, road_b.left_road, t)
+                right_road = MathTools.lerp(road_a.right_road, road_b.right_road, t)
 
-                road = RoadRacing(left_road, right_road, y)
+                absolute_z = relative_z + self.camera_z
 
-                self.render_road(screen,
-                    visible_distance,
-                    current_distance, 
+                road = RoadRacing(
+                    left_road=left_road,
+                    right_road=right_road,
+                    relative_z=relative_z,
+                    absolute_z=absolute_z
+                )
+
+                self.render_road(
+                    screen,
                     road=road
                 )
 
                 self.render_stripe_center_road(
-                    screen,
-                    visible_distance,
-                    current_distance,
+                    screen=screen,
                     road=road
                 )
 
                 self.render_stripe_border_road(
-                    screen,
-                    visible_distance,
-                    current_distance,
+                    screen=screen,
                     road=road
                 )
 
     def render_road(self,
                     screen,
-                    visible_distance: float,
-                    current_distance: float,
                     road: RoadRacing,
         ):
        pygame.draw.line(
            screen, 
            ColorPalette.ROAD, 
-           (road.left_road, road.y), 
-           (road.right_road, road.y)
+           (road.left_road, road.relative_z), 
+           (road.right_road, road.relative_z)
         )
        
     def render_stripe_center_road(self,
                       screen,
-                      visible_distance: float,
-                      current_distance: float,
-                      road: RoadRacing,
+                      road: RoadRacing
         ):
         road_factor = road.road_width * SettingsRacing.LANE_CENTER_RATIO
 
         if self.stripe_wave(
+            road,
             SettingsRacing.LANE_CENTER_FACTOR,
-            SettingsRacing.LANE_CENTER_DUTY,
-            current_distance, 
-            visible_distance, 
-            road
+            SettingsRacing.LANE_CENTER_DUTY
         ):
             border_color = ColorPalette.WHITE
         else:
             border_color = ColorPalette.ROAD
 
-        # Left Road
+        # Center Road
         pygame.draw.line(
            screen, 
            border_color, 
-           (road._center_road - road_factor, road.y),
-           (road._center_road + road_factor, road.y)
+           (road._center_road - road_factor, road.relative_z),
+           (road._center_road + road_factor, road.relative_z)
         )
 
     def render_stripe_border_road(self,
                       screen,
-                      visible_distance: float,
-                      current_distance: float,
-                      road: RoadRacing,
+                      road: RoadRacing
         ):
         road_factor = road.road_width * SettingsRacing.LANE_BORDER_RATIO
 
         if self.stripe_wave(
+            road,
             SettingsRacing.LANE_BORDER_FACTOR,
             SettingsRacing.LANE_BORDER_DUTY,
-            current_distance, 
-            visible_distance, 
-            road
         ):
             border_color = ColorPalette.LANE_BORDER_A
         else:
@@ -255,14 +242,14 @@ class RacingEngine(IEngine):
         pygame.draw.line(
            screen, 
            border_color, 
-           (road.left_road, road.y), 
-           (road.left_road + road_factor, road.y)
+           (road.left_road, road.relative_z), 
+           (road.left_road + road_factor, road.relative_z)
         )
 
         # Right Road
         pygame.draw.line(
            screen, 
            border_color, 
-           (road.right_road, road.y), 
-           (road.right_road + road_factor, road.y)
+           (road.right_road, road.relative_z), 
+           (road.right_road + road_factor, road.relative_z)
         )

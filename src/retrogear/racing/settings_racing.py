@@ -16,7 +16,7 @@ class SettingsRacing():
 
     SPEED_TEST = 50.0
 
-    MAX_VISIBLE_DISTANCE = env.SCREEN_HEIGHT // 2
+    MAX_VISIBLE_SLICE_Z = env.SCREEN_HEIGHT // 2
 
     BETWEEN_LINE = 1
 

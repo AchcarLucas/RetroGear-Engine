@@ -18,6 +18,7 @@ class RoadRacing():
         ):
         self._left_road = left_road
         self._right_road = right_road
+        self._center_road = (left_road + right_road) / 2
         self._y = y
 
     @property

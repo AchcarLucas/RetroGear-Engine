@@ -18,7 +18,7 @@ class SettingsRacing():
 
     MAX_VISIBLE_SLICE_Z = env.SCREEN_HEIGHT // 2
 
-    BETWEEN_LINE = 1
+    BETWEEN_LINE = 1.5
 
     LANE_BORDER_FACTOR = 0.025
     LANE_BORDER_DUTY = 0.5

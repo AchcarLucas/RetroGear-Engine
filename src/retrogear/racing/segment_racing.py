@@ -23,27 +23,6 @@ class SegmentRacing():
         self.racing_curve_factor = racing_curve_factor
         self.racing_elevation_factor = racing_elevation_factor
 
-    def interpolate(self, next: Self) -> List["SubSegmentRacing"]:
-        """
-            Interpolates the current segment with the next segment, creating sub-segments between them.
-
-            next: the next segment to be interpolated
-
-            Returns a list of interpolated SubSegmentRacing objects.
-        """
-        sub_racing_segment_interpolated: List["SubSegmentRacing"] = []
-
-        for i in range(0, self.racing_length):
-            sub_racing_segment = SubSegmentRacing(
-                racing_width_factor=self.racing_width_factor,
-                racing_curve_factor=self.racing_curve_factor,
-                racing_elevation_factor=self.racing_elevation_factor
-            )
-
-            sub_racing_segment_interpolated.append(sub_racing_segment)
-
-        return sub_racing_segment_interpolated
-
 """
     The SubSegmentRacing class is simply an alias of SegmentRacing.
     Its behavior is identical to SegmentRacing, but it is used to distinguish full segments from node segments.

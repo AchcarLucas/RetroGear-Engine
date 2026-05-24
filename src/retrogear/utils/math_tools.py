@@ -35,3 +35,12 @@ class MathTools():
     @staticmethod
     def abs(value: float) -> float:
         return value if value >= 0 else -value
+    
+    @staticmethod
+    def clamp(value: float, max_abs_value: float) -> float:
+        if value > max_abs_value:
+            return max_abs_value
+        elif value < -max_abs_value:
+            return -max_abs_value
+        else:
+            return value

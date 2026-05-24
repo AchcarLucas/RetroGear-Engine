@@ -38,9 +38,6 @@ class RacingEngine(IEngine):
 
         self.speed = SettingsRacing.SPEED_TEST
 
-        self.curve_accumulator: float = 0.0
-        self.elevator_accumulator: float = 0.0
-
     def set_racing_track(self,
                          racing_track: TrackRacing
         ):
@@ -65,17 +62,19 @@ class RacingEngine(IEngine):
             slice_z: int,
             side_offset: int,
             curve_accumulator: int,
-            elevator_accumulator: int
+            elevator_accumulator: int,
+            width_factor: float=1.0
         ) -> RoadRacing:
         perspective = self.perspective(slice_z)
         inverse_perspective = 1.0 / perspective
 
         screen_x = self.center_screen_x + (curve_accumulator * inverse_perspective)
-        screen_y = self.center_screen_y + (elevator_accumulator * inverse_perspective)
-
-        road_width = (env.SCREEN_WIDTH * SettingsRacing.PERSPECTIVE_RATIO) * perspective
-
-        relative_z = int(SettingsRacing.BETWEEN_LINE * slice_z) + screen_y
+        
+        depth_y = SettingsRacing.BETWEEN_LINE * slice_z
+        hill_y = elevator_accumulator * inverse_perspective
+        relative_z = self.center_screen_y + depth_y - hill_y
+    
+        road_width = (env.SCREEN_WIDTH * SettingsRacing.PERSPECTIVE_RATIO) * width_factor * perspective
 
         left_road = int(screen_x - road_width) + side_offset
         right_road = int(screen_x + road_width) + side_offset
@@ -93,7 +92,7 @@ class RacingEngine(IEngine):
         ) -> bool:
 
         # The 'self.speed' feature ensures that the animation follows the car's physics engine.
-        position = self.camera_z / self.speed
+        position = road.absolute_z / 10.0
 
         # We maintain the logic of the inverse perspective that resolved the size issue.
         fator_perspectiva = 70.0 / (road.relative_z + 1.0)
@@ -112,15 +111,14 @@ class RacingEngine(IEngine):
         """
         previous_camera_z = self.camera_z
 
-        self.camera_z += (delta_time * self.speed)
+        #self.camera_z += (delta_time * self.speed)
+        self.camera_z += self.speed
         self.camera_z %= self.racing_track.get_max_distance()
 
         # a reset occurred, reset the accumulators and the camera distance to remove any residue.
         if previous_camera_z > self.camera_z:
             self.laps += 1
             self.camera_z = 0.0
-            self.curve_accumulator = 0.0
-            self.elevator_accumulator = 0.0
 
     def render(self, screen):
         """
@@ -133,7 +131,76 @@ class RacingEngine(IEngine):
 
         # center line (DEBUG)
         pygame.draw.line(screen, (255, 255, 255), (0, self.center_screen_y), (env.SCREEN_WIDTH, self.center_screen_y))
+        
+        heading_accumulator = 0.0
+        curve_accumulator = 0.0
+        elevator_accumulator = 0.0
 
+        last_relative = env.SCREEN_HEIGHT
+
+        for slice_z in reversed(range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z)):
+            world_z = slice_z + self.camera_z
+           
+            segment_a = self.racing_track.get_racing_sub_segment(distance=world_z)
+            segment_b = self.racing_track.get_racing_sub_segment(distance=world_z + 1)
+
+            road_a: RoadRacing = self.project(
+                slice_z=slice_z,
+                side_offset=self.camera_side_offset,
+                curve_accumulator=curve_accumulator,
+                elevator_accumulator=elevator_accumulator
+            )
+
+            heading_accumulator += (segment_a.racing_curve_factor + segment_b.racing_curve_factor) * 0.5
+            curve_accumulator += heading_accumulator
+            elevator_accumulator += (segment_a.racing_elevation_factor + segment_b.racing_elevation_factor) * 0.5
+
+            road_b: RoadRacing = self.project(
+                slice_z=slice_z + 1,
+                side_offset=self.camera_side_offset,
+                curve_accumulator=curve_accumulator,
+                elevator_accumulator=elevator_accumulator
+            )
+            
+            relative_a = int(road_a.relative_z)
+            relative_b = int(road_b.relative_z)
+
+            dy = relative_b - relative_a
+
+            if relative_b >= last_relative or dy <= 0:
+                continue
+
+            last_relative = relative_b
+
+            for (relative_z) in range(relative_a, relative_b + 1):
+                t = (relative_z - relative_a) / dy
+                left_road = MathTools.lerp(road_a.left_road, road_b.left_road, t)
+                right_road = MathTools.lerp(road_a.right_road, road_b.right_road, t)
+
+                road = RoadRacing(
+                    left_road=left_road,
+                    right_road=right_road,
+                    relative_z=relative_z,
+                    absolute_z=world_z,
+                    relative_t=t
+                )
+
+                self.render_road(
+                    screen,
+                    road=road
+                )
+
+                self.render_stripe_border_line(
+                    screen=screen,
+                    road=road
+                )
+
+                self.render_stripe_center_line(
+                    screen=screen,
+                    road=road
+                )
+
+        """
         # get the segment related to the camera.
         self.current_segment = self.racing_track.get_racing_sub_segment(distance=self.camera_z)
 
@@ -145,6 +212,7 @@ class RacingEngine(IEngine):
             self.previous_segment = self.current_segment
 
         # render the road
+        
         for slice_z in range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z):
             road_a: RoadRacing = self.project(slice_z=slice_z,
                                               side_offset=self.camera_side_offset,
@@ -188,6 +256,7 @@ class RacingEngine(IEngine):
                     screen=screen,
                     road=road
                 )
+        """
 
     def render_road(self,
                     screen,
@@ -221,14 +290,12 @@ class RacingEngine(IEngine):
         line_right = (road.right_road) - road_offset
 
          # Center Line
-        """
         pygame.draw.line(
            screen, 
            border_color, 
            (road._center_road - line_factor, road.relative_z),
            (road._center_road + line_factor, road.relative_z)
         )
-        """
 
         # Left Line
         pygame.draw.line(

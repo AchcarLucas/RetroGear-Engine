@@ -67,82 +67,22 @@ class RetroGearEngine(IEngine):
             Engine testing method
         '''
         self.racing_render = RacingEngine()
+        self.racing_track = TrackRacing()
 
-        racing_segment_list = []
+        # reta
+        self.racing_track.append(SegmentRacing(80, 1.0, 0.0, 0.0))
+        # curva direita
+        self.racing_track.append(SegmentRacing(70, 1.0, 0.02, 0.0))
+        # # hill
+        self.racing_track.append(SegmentRacing(70, 1.0, 0.0, 0.1))
+        # curva esquerda
+        self.racing_track.append(SegmentRacing(90, 1.0, -0.025, -0.3))
+        # reta
+        self.racing_track.append(SegmentRacing(100, 1.0, 0.0, 0.0))
 
-        # beginning of the segment
-        racing_segment_list.append(SegmentRacing(10, 1.0, 0.0, 0.0))
-
-        # intermediate segments
-        racing_segment_list.append(SegmentRacing(50, 1.0, 0.0, 0.0))
-
-        # test
-        racing_segment_list.append(SegmentRacing(50, 2.0, 0.0, 0.0))
-
-        # right and back
-        racing_segment_list.append(SegmentRacing(30, 1.0, 0.5, 0.0))
-        racing_segment_list.append(SegmentRacing(30, 1.0, -0.5, 0.0))
-        # right and back
-        racing_segment_list.append(SegmentRacing(40, 1.0, 0.5, 0.0))
-        racing_segment_list.append(SegmentRacing(40, 1.0, -0.5, 0.0))
-        # right and back
-        racing_segment_list.append(SegmentRacing(80, 1.0, 0.5, 0.0))
-        racing_segment_list.append(SegmentRacing(80, 1.0, -0.5, 0.0))
-
-        # left and back
-        racing_segment_list.append(SegmentRacing(30, 1.0, -0.5, 0.0))
-        racing_segment_list.append(SegmentRacing(30, 1.0, 0.5, 0.0))
-        # left and back
-        racing_segment_list.append(SegmentRacing(50, 1.0, -0.5, 0.0))
-        racing_segment_list.append(SegmentRacing(50, 1.0, 0.5, 0.0))
-        # left and back
-        racing_segment_list.append(SegmentRacing(80, 1.0, -0.5, 0.0))
-        racing_segment_list.append(SegmentRacing(80, 1.0, 0.5, 0.0))
-
-        # down and back
-        racing_segment_list.append(SegmentRacing(20, 1.0, 0.0, 1.0))
-        racing_segment_list.append(SegmentRacing(20, 1.0, 0.0, -1.0))
-
-        # up and back
-        racing_segment_list.append(SegmentRacing(40, 1.0, 0.0, -1.0))
-        racing_segment_list.append(SegmentRacing(40, 1.0, 0.0, 1.0))
-
-        # down/left and back
-        racing_segment_list.append(SegmentRacing(60, 1.0, -0.5, 0.6))
-        racing_segment_list.append(SegmentRacing(60, 1.0, 0.5, -0.6))
-
-        # up/left and back
-        racing_segment_list.append(SegmentRacing(60, 1.0, -0.5, -0.6))
-        racing_segment_list.append(SegmentRacing(60, 1.0, 0.5, 0.6))
-
-        # intermediate segments
-        racing_segment_list.append(SegmentRacing(50, 1.0, 0.0, 0.0))
-
-        # end of segments
-        racing_segment_list.append(SegmentRacing(10, 1.0, 0.0, 0.0))
-
-        self.racing_track = TrackRacing(
-            racing_segment_list
-        )
-
-        self.racing_track.generate_racing_track()
+        logging.info(f"Racing track: {self.racing_track}")
 
         self.racing_render.set_racing_track(self.racing_track)
-
-        logging.info(self.racing_track)
-        logging.info(self.racing_track.get_racing_sub_segment(0))
-        logging.info(self.racing_track.get_racing_sub_segment(1))
-        logging.info(self.racing_track.get_racing_sub_segment(2))
-        logging.info(self.racing_track.get_racing_sub_segment(3))
-        logging.info(self.racing_track.get_racing_sub_segment(1200))
-        logging.info(self.racing_track.get_racing_sub_segment(1201))
-        logging.info(self.racing_track.get_racing_sub_segment(1202))
-        logging.info(self.racing_track.get_racing_sub_segment(1203))
-        logging.info(self.racing_track.get_racing_sub_segment(1204))
-        logging.info(self.racing_track.get_racing_sub_segment(1205))
-        logging.info(self.racing_track.get_racing_sub_segment(1206))
-        logging.info(self.racing_track.get_racing_sub_segment(1207))
-        logging.info(self.racing_track.get_racing_sub_segment(1208))
 
     def run(self):
         '''

@@ -11,14 +11,14 @@ logging = locator.get_locator('logging')
 class SettingsRacing():
     DEPTH_FACTOR = 0.02
 
-    PERSPECTIVE_OFFSET = 10.0
-    PERSPECTIVE_RATIO = 0.25
+    PERSPECTIVE_OFFSET = 20.0
+    PERSPECTIVE_RATIO = 0.42
 
-    SPEED_TEST = 50.0
+    SPEED_TEST = 0.8
 
     MAX_VISIBLE_SLICE_Z = env.SCREEN_HEIGHT // 2
 
-    BETWEEN_LINE = 1.5
+    BETWEEN_LINE = 3.0
 
     LANE_BORDER_FACTOR = 0.025
     LANE_BORDER_DUTY = 0.5

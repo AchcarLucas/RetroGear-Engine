@@ -111,8 +111,7 @@ class RacingEngine(IEngine):
         """
         previous_camera_z = self.camera_z
 
-        #self.camera_z += (delta_time * self.speed)
-        self.camera_z += self.speed
+        self.camera_z += (delta_time * self.speed)
         self.camera_z %= self.racing_track.get_max_distance()
 
         # a reset occurred, reset the accumulators and the camera distance to remove any residue.
@@ -138,8 +137,9 @@ class RacingEngine(IEngine):
 
         last_relative = env.SCREEN_HEIGHT
 
+        #for slice_z in reversed(range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z)):
         for slice_z in reversed(range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z)):
-            world_z = slice_z + self.camera_z
+            world_z = self.camera_z + (SettingsRacing.MAX_VISIBLE_SLICE_Z - slice_z)
            
             segment_a = self.racing_track.get_racing_sub_segment(distance=world_z)
             segment_b = self.racing_track.get_racing_sub_segment(distance=world_z + 1)

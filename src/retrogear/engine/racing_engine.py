@@ -200,64 +200,6 @@ class RacingEngine(IEngine):
                     road=road
                 )
 
-        """
-        # get the segment related to the camera.
-        self.current_segment = self.racing_track.get_racing_sub_segment(distance=self.camera_z)
-
-        # curve and elevator integration along the camera segment
-        # if we're still in the same segment, we're not going to increase it again.
-        if self.current_segment != self.previous_segment:
-            self.curve_accumulator += self.current_segment.racing_curve_factor
-            self.elevator_accumulator += self.current_segment.racing_elevation_factor
-            self.previous_segment = self.current_segment
-
-        # render the road
-        
-        for slice_z in range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z):
-            road_a: RoadRacing = self.project(slice_z=slice_z,
-                                              side_offset=self.camera_side_offset,
-                                              curve_accumulator=self.curve_accumulator,
-                                              elevator_accumulator=self.elevator_accumulator
-                                            )
-
-            road_b: RoadRacing = self.project(slice_z=slice_z + 1,
-                                              side_offset=self.camera_side_offset,
-                                              curve_accumulator=self.curve_accumulator,
-                                              elevator_accumulator=self.elevator_accumulator
-                                            )
-
-            # interpolate the road between road_a and road_b to fill the gap between them.
-            for (relative_z) in range(int(road_a.relative_z), int(road_b.relative_z)):
-                t = (relative_z - road_a.relative_z) / (road_b.relative_z - road_a.relative_z)
-                left_road = MathTools.lerp(road_a.left_road, road_b.left_road, t)
-                right_road = MathTools.lerp(road_a.right_road, road_b.right_road, t)
-
-                absolute_z = relative_z + self.camera_z
-
-                road = RoadRacing(
-                    left_road=left_road,
-                    right_road=right_road,
-                    relative_z=relative_z,
-                    absolute_z=absolute_z,
-                    relative_t=t
-                )
-
-                self.render_road(
-                    screen,
-                    road=road
-                )
-
-                self.render_stripe_border_line(
-                    screen=screen,
-                    road=road
-                )
-
-                self.render_stripe_center_line(
-                    screen=screen,
-                    road=road
-                )
-        """
-
     def render_road(self,
                     screen,
                     road: RoadRacing,

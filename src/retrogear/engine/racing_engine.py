@@ -92,12 +92,14 @@ class RacingEngine(IEngine):
         ) -> bool:
 
         # The 'self.speed' feature ensures that the animation follows the car's physics engine.
-        position = road.absolute_z / 10.0
+        position = road.absolute_z / 25.0
 
         # We maintain the logic of the inverse perspective that resolved the size issue.
-        fator_perspectiva = 70.0 / (road.relative_z + 1.0)
+        fator_perspectiva = 80.0 / (road.relative_z + 40.0)
+        #fator_perspectiva = (road.relative_z + 1.0) / 80.0
 
-        return MathTools.rectangular_wave(t=fator_perspectiva - position, p=factor * 0.75, duty=duty)
+        #return MathTools.rectangular_wave(t=fator_perspectiva - position, p=factor * 10, duty=duty)
+        return MathTools.rectangular_wave(t=position * fator_perspectiva, p=factor * 10, duty=duty)
 
     def event(self, event):
         '''
@@ -127,9 +129,6 @@ class RacingEngine(IEngine):
             return
         
         screen.fill(ColorPalette.SKY)
-
-        # center line (DEBUG)
-        pygame.draw.line(screen, (255, 255, 255), (0, self.center_screen_y), (env.SCREEN_WIDTH, self.center_screen_y))
         
         heading_accumulator = 0.0
         curve_accumulator = 0.0
@@ -137,7 +136,6 @@ class RacingEngine(IEngine):
 
         last_relative = env.SCREEN_HEIGHT
 
-        #for slice_z in reversed(range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z)):
         for slice_z in reversed(range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z)):
             world_z = self.camera_z + (SettingsRacing.MAX_VISIBLE_SLICE_Z - slice_z)
            
@@ -230,14 +228,6 @@ class RacingEngine(IEngine):
 
         line_left = (road.left_road) + road_offset
         line_right = (road.right_road) - road_offset
-
-         # Center Line
-        pygame.draw.line(
-           screen, 
-           border_color, 
-           (road._center_road - line_factor, road.relative_z),
-           (road._center_road + line_factor, road.relative_z)
-        )
 
         # Left Line
         pygame.draw.line(

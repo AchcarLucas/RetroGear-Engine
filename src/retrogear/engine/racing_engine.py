@@ -92,14 +92,13 @@ class RacingEngine(IEngine):
             duty: float,
         ) -> bool:
 
-        perspective = self.perspective(road.absolute_z)
-        period = perspective * 0.25 * 50.0
+        # The 'self.speed' feature ensures that the animation follows the car's physics engine.
+        position = self.camera_z / self.speed
 
-        virtual_phase = road.absolute_z / period
-        current_phase = (road.relative_z + road.relative_z) / period
-        continues_wave = (current_phase - virtual_phase)
+        # We maintain the logic of the inverse perspective that resolved the size issue.
+        fator_perspectiva = 70.0 / (road.relative_z + 1.0)
 
-        return MathTools.rectangular_wave(continues_wave, 1.0, duty=duty)
+        return MathTools.rectangular_wave(t=fator_perspectiva - position, p=factor * 0.75, duty=duty)
 
     def event(self, event):
         '''
@@ -171,7 +170,8 @@ class RacingEngine(IEngine):
                     left_road=left_road,
                     right_road=right_road,
                     relative_z=relative_z,
-                    absolute_z=absolute_z
+                    absolute_z=absolute_z,
+                    relative_t=t
                 )
 
                 self.render_road(
@@ -179,12 +179,12 @@ class RacingEngine(IEngine):
                     road=road
                 )
 
-                self.render_stripe_center_road(
+                self.render_stripe_border_line(
                     screen=screen,
                     road=road
                 )
 
-                self.render_stripe_border_road(
+                self.render_stripe_center_line(
                     screen=screen,
                     road=road
                 )
@@ -200,11 +200,11 @@ class RacingEngine(IEngine):
            (road.right_road, road.relative_z)
         )
        
-    def render_stripe_center_road(self,
+    def render_stripe_center_line(self,
                       screen,
                       road: RoadRacing
         ):
-        road_factor = road.road_width * SettingsRacing.LANE_CENTER_RATIO
+        line_factor = road.road_width * SettingsRacing.LANE_CENTER_RATIO
 
         if self.stripe_wave(
             road,
@@ -215,19 +215,42 @@ class RacingEngine(IEngine):
         else:
             border_color = ColorPalette.ROAD
 
-        # Center Road
+        road_offset = road.road_width * 0.385
+
+        line_left = (road.left_road) + road_offset
+        line_right = (road.right_road) - road_offset
+
+         # Center Line
+        """
         pygame.draw.line(
            screen, 
            border_color, 
-           (road._center_road - road_factor, road.relative_z),
-           (road._center_road + road_factor, road.relative_z)
+           (road._center_road - line_factor, road.relative_z),
+           (road._center_road + line_factor, road.relative_z)
+        )
+        """
+
+        # Left Line
+        pygame.draw.line(
+           screen, 
+           border_color, 
+           (line_left - line_factor, road.relative_z),
+           (line_left + line_factor, road.relative_z)
         )
 
-    def render_stripe_border_road(self,
+        # Right Line
+        pygame.draw.line(
+           screen, 
+           border_color, 
+           (line_right - line_factor, road.relative_z),
+           (line_right + line_factor, road.relative_z)
+        )
+
+    def render_stripe_border_line(self,
                       screen,
                       road: RoadRacing
         ):
-        road_factor = road.road_width * SettingsRacing.LANE_BORDER_RATIO
+        line_factor = road.road_width * SettingsRacing.LANE_BORDER_RATIO
 
         if self.stripe_wave(
             road,
@@ -238,18 +261,19 @@ class RacingEngine(IEngine):
         else:
             border_color = ColorPalette.LANE_BORDER_B
 
-        # Left Road
+        # Left Line
         pygame.draw.line(
            screen, 
            border_color, 
            (road.left_road, road.relative_z), 
-           (road.left_road + road_factor, road.relative_z)
+           (road.left_road + line_factor, road.relative_z)
         )
-
-        # Right Road
+    
+        # Right Line
         pygame.draw.line(
            screen, 
            border_color, 
            (road.right_road, road.relative_z), 
-           (road.right_road + road_factor, road.relative_z)
+           (road.right_road + line_factor, road.relative_z)
         )
+

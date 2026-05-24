@@ -31,3 +31,7 @@ class MathTools():
             duty : duty cycle (0 a 1)
         """
         return (t % p) < (duty * p)
+
+    @staticmethod
+    def abs(value: float) -> float:
+        return value if value >= 0 else -value

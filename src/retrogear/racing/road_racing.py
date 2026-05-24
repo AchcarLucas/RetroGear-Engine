@@ -15,13 +15,15 @@ class RoadRacing():
              left_road,
              right_road,
              relative_z:float = 0.0,
-             absolute_z:float = 0.0
+             absolute_z:float = 0.0,
+             relative_t:float = 0.0
         ):
         self._left_road = left_road
         self._right_road = right_road
         self._center_road = (left_road + right_road) / 2
         self._relative_z = relative_z
         self._absolute_z = absolute_z
+        self._relative_t = relative_t
 
     @property
     def left_road(self):
@@ -38,6 +40,10 @@ class RoadRacing():
     @property
     def absolute_z(self):
         return self._absolute_z
+    
+    @property
+    def relative_t(self):
+        return self._relative_t
     
     @property
     def road_width(self):

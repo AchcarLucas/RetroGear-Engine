@@ -70,7 +70,7 @@ class RetroGearEngine(IEngine):
         self.racing_track = TrackRacing()
 
         # reta
-        self.racing_track.append(SegmentRacing(1000, 1.0, 0.0, 0.0))
+        self.racing_track.append(SegmentRacing(400, 1.0, 0.0, 0.0))
         # curva direita
         self.racing_track.append(SegmentRacing(70, 1.0, 0.01, 0.0))
         # curva direita (reverted)

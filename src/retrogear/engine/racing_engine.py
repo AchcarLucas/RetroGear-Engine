@@ -87,19 +87,12 @@ class RacingEngine(IEngine):
     
     def stripe_wave(self,
             road: RoadRacing,
-            factor:float,
-            duty: float,
+            factor:float = 120.0,
         ) -> bool:
 
-        # The 'self.speed' feature ensures that the animation follows the car's physics engine.
-        position = road.absolute_z / 25.0
-
-        # We maintain the logic of the inverse perspective that resolved the size issue.
-        fator_perspectiva = 80.0 / (road.relative_z + 40.0)
-        #fator_perspectiva = (road.relative_z + 1.0) / 80.0
-
-        #return MathTools.rectangular_wave(t=fator_perspectiva - position, p=factor * 10, duty=duty)
-        return MathTools.rectangular_wave(t=position * fator_perspectiva, p=factor * 10, duty=duty)
+        perspective = self.perspective(road.slice_z)
+        inverse_perspective = 1.0 / perspective
+        return (int(((road.absolute_z / factor) * inverse_perspective)) % 2)
 
     def event(self, event):
         '''
@@ -146,7 +139,8 @@ class RacingEngine(IEngine):
                 slice_z=slice_z,
                 side_offset=self.camera_side_offset,
                 curve_accumulator=curve_accumulator,
-                elevator_accumulator=elevator_accumulator
+                elevator_accumulator=elevator_accumulator,
+                width_factor=segment_a.racing_width_factor
             )
 
             heading_accumulator += (segment_a.racing_curve_factor + segment_b.racing_curve_factor) * 0.5
@@ -157,7 +151,8 @@ class RacingEngine(IEngine):
                 slice_z=slice_z + 1,
                 side_offset=self.camera_side_offset,
                 curve_accumulator=curve_accumulator,
-                elevator_accumulator=elevator_accumulator
+                elevator_accumulator=elevator_accumulator,
+                width_factor=segment_a.racing_width_factor
             )
             
             relative_a = int(road_a.relative_z)
@@ -178,9 +173,10 @@ class RacingEngine(IEngine):
                 road = RoadRacing(
                     left_road=left_road,
                     right_road=right_road,
+                    slice_z=slice_z,
                     relative_z=relative_z,
                     absolute_z=world_z,
-                    relative_t=t
+                    relative_t=t,
                 )
 
                 self.render_road(
@@ -217,8 +213,7 @@ class RacingEngine(IEngine):
 
         if self.stripe_wave(
             road,
-            SettingsRacing.LANE_CENTER_FACTOR,
-            SettingsRacing.LANE_CENTER_DUTY
+            SettingsRacing.LANE_CENTER_FACTOR
         ):
             border_color = ColorPalette.WHITE
         else:
@@ -253,8 +248,7 @@ class RacingEngine(IEngine):
 
         if self.stripe_wave(
             road,
-            SettingsRacing.LANE_BORDER_FACTOR,
-            SettingsRacing.LANE_BORDER_DUTY,
+            SettingsRacing.LANE_BORDER_FACTOR
         ):
             border_color = ColorPalette.LANE_BORDER_A
         else:

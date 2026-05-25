@@ -14,13 +14,15 @@ class RoadRacing():
     def __init__(self,
              left_road,
              right_road,
+             slice_z : float = 0.0,
              relative_z:float = 0.0,
              absolute_z:float = 0.0,
-             relative_t:float = 0.0
+             relative_t:float = 0.0,
         ):
         self._left_road = left_road
         self._right_road = right_road
         self._center_road = (left_road + right_road) / 2
+        self._slice_z = slice_z
         self._relative_z = relative_z
         self._absolute_z = absolute_z
         self._relative_t = relative_t
@@ -33,6 +35,10 @@ class RoadRacing():
     def right_road(self):
         return self._right_road
     
+    @property
+    def slice_z(self):
+        return self._slice_z
+
     @property
     def relative_z(self):
         return self._relative_z

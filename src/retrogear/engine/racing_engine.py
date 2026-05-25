@@ -85,14 +85,15 @@ class RacingEngine(IEngine):
             relative_z=relative_z
         )
     
-    def stripe_wave(self,
+    def stribe_mod(self,
             road: RoadRacing,
             factor:float = 120.0,
         ) -> bool:
 
         perspective = self.perspective(road.slice_z)
         inverse_perspective = 1.0 / perspective
-        return (int(((road.absolute_z / factor) * inverse_perspective)) % 2)
+        stribe = int((road.absolute_z / factor) * inverse_perspective)
+        return stribe % 2
 
     def event(self, event):
         '''
@@ -184,12 +185,12 @@ class RacingEngine(IEngine):
                     road=road
                 )
 
-                self.render_stripe_border_line(
+                self.render_stribe_border_line(
                     screen=screen,
                     road=road
                 )
 
-                self.render_stripe_center_line(
+                self.render_stribe_center_line(
                     screen=screen,
                     road=road
                 )
@@ -205,13 +206,13 @@ class RacingEngine(IEngine):
            (road.right_road, road.relative_z)
         )
        
-    def render_stripe_center_line(self,
+    def render_stribe_center_line(self,
                       screen,
                       road: RoadRacing
         ):
         line_factor = road.road_width * SettingsRacing.LANE_CENTER_RATIO
 
-        if self.stripe_wave(
+        if self.stribe_mod(
             road,
             SettingsRacing.LANE_CENTER_FACTOR
         ):
@@ -240,13 +241,13 @@ class RacingEngine(IEngine):
            (line_right + line_factor, road.relative_z)
         )
 
-    def render_stripe_border_line(self,
+    def render_stribe_border_line(self,
                       screen,
                       road: RoadRacing
         ):
         line_factor = road.road_width * SettingsRacing.LANE_BORDER_RATIO
 
-        if self.stripe_wave(
+        if self.stribe_mod(
             road,
             SettingsRacing.LANE_BORDER_FACTOR
         ):

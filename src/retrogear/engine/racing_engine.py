@@ -91,9 +91,12 @@ class RacingEngine(IEngine):
         ) -> bool:
 
         perspective = self.perspective(road.slice_z)
-        inverse_perspective = 1.0 / perspective
-        stribe = int((road.absolute_z / factor) * inverse_perspective)
-        return stribe % 2
+        inverse_perspective = 1.0 / (perspective * factor)
+
+        stribe = int((road.relative_z) * inverse_perspective)
+        displacement = int((self.camera_z * self.speed) / 20.0)
+
+        return (stribe + displacement) % 2
 
     def event(self, event):
         '''
@@ -138,7 +141,7 @@ class RacingEngine(IEngine):
 
         for slice_z in reversed(range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z)):
             world_z = self.camera_z + (SettingsRacing.MAX_VISIBLE_SLICE_Z - slice_z)
-           
+
             segment_a = self.racing_track.get_racing_sub_segment(distance=world_z)
             segment_b = self.racing_track.get_racing_sub_segment(distance=world_z + 1)
 

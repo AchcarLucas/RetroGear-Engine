@@ -14,7 +14,7 @@ class SettingsRacing():
     PERSPECTIVE_OFFSET = 20.0
     PERSPECTIVE_RATIO = 0.42
 
-    SPEED_TEST = 100.0
+    SPEED_TEST = 15.0
 
     MAX_VISIBLE_SLICE_Z = env.SCREEN_HEIGHT // 2
 

@@ -123,6 +123,12 @@ class RacingEngine(IEngine):
             return
         
         screen.fill(ColorPalette.SKY)
+
+        pygame.draw.rect(
+            screen,
+            (60, 180, 60),
+            (0, self.center_screen_y, env.SCREEN_WIDTH, env.SCREEN_HEIGHT)
+        )
         
         heading_accumulator = 0.0
         curve_accumulator = 0.0

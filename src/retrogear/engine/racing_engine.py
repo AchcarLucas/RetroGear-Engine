@@ -47,10 +47,6 @@ class RacingEngine(IEngine):
         self.racing_track = racing_track
 
     @property
-    def minimum_y(self):
-        return (SettingsRacing.BETWEEN_LINE * SettingsRacing.MAX_VISIBLE_DISTANCE) + self.center_screen_y
-
-    @property
     def maximum_y(self):
         return self.center_screen_y
 
@@ -70,11 +66,11 @@ class RacingEngine(IEngine):
 
         screen_x = self.center_screen_x + (curve_accumulator * inverse_perspective)
         
-        depth_y = SettingsRacing.BETWEEN_LINE * slice_z
+        depth_y = SettingsRacing.DEPTH_SLICE_FACTOR * slice_z
         hill_y = elevator_accumulator * inverse_perspective
         relative_z = self.center_screen_y + depth_y - hill_y
     
-        road_width = (env.SCREEN_WIDTH * SettingsRacing.PERSPECTIVE_RATIO) * width_factor * perspective
+        road_width = (env.SCREEN_WIDTH * SettingsRacing.PERSPECTIVE_FACTOR) * width_factor * perspective
 
         left_road = int(screen_x - road_width) + side_offset
         right_road = int(screen_x + road_width) + side_offset
@@ -96,7 +92,7 @@ class RacingEngine(IEngine):
         stribe_perspective = inverse_perspective / factor
 
         stribe = road.relative_z * stribe_perspective
-        displacement = (self.camera_z * self.speed * 0.38) / factor
+        displacement = (self.camera_z) / factor
 
         phase = stribe + displacement
 
@@ -227,17 +223,17 @@ class RacingEngine(IEngine):
     
         if self.stribe_mod(
             road,
-            SettingsRacing.LANE_TRACK_FACTOR
+            SettingsRacing.LANE_TRACK_STRIBE_FACTOR
         ):
             stribe_color = ColorPalette.WHITE
         else:
             stribe_color = ColorPalette.ROAD
 
 
-        lanes = max(2, int(round(road.width_factor / SettingsRacing.LANE_RANGE_FACTOR)))
+        lanes = max(2, int(round(road.width_factor / SettingsRacing.MULTILANE_FACTOR)))
 
         road_width_normalized = MathTools.normalize(road.road_width / road.width_factor, 0.0, 1.0)
-        lane_width_factor = road_width_normalized * SettingsRacing.LANE_TRACK_RATIO
+        lane_width_factor = road_width_normalized * SettingsRacing.LANE_TRACK_WIDTH_FACTOR
 
         line_left = line_right = road.center_road
 
@@ -270,14 +266,14 @@ class RacingEngine(IEngine):
         ):
         if self.stribe_mod(
             road,
-            SettingsRacing.LANE_BORDER_FACTOR
+            SettingsRacing.LANE_BORDER_STRIBE_FACTOR
         ):
             stribe_color = ColorPalette.LANE_BORDER_A
         else:
             stribe_color = ColorPalette.LANE_BORDER_B
 
         road_width_normalized = MathTools.normalize(road.road_width / road.width_factor, 0.0, 1.0)
-        lane_width_factor = road_width_normalized * SettingsRacing.LANE_BORDER_RATIO
+        lane_width_factor = road_width_normalized * SettingsRacing.LANE_BORDER_WIDTH_FACTOR
 
         # Left Line
         pygame.draw.line(

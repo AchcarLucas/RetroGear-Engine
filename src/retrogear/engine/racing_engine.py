@@ -91,9 +91,12 @@ class RacingEngine(IEngine):
         ) -> bool:
 
         perspective = self.perspective(road.slice_z)
-        inverse_perspective = 1.0 / (perspective * factor)
+        inverse_perspective = 1.0 / (perspective)
 
-        stribe = int((road.relative_z) * inverse_perspective)
+        stribe = int(
+            (road.relative_z) * (inverse_perspective / factor)
+        )
+
         displacement = int((self.camera_z * self.speed) / 20.0)
 
         return (stribe + displacement) % 2

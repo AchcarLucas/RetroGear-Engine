@@ -70,22 +70,22 @@ class RetroGearEngine(IEngine):
         self.racing_track = TrackRacing()
 
         # reta
-        self.racing_track.append(SegmentRacing(400, 1.0, 0.0, 0.0))
-        self.racing_track.append(SegmentRacing(400, 2.0, 0.0, 0.0))
+        self.racing_track.append(SegmentRacing(1, 1.0, 0.0, 0.0))
+        self.racing_track.append(SegmentRacing(1, 2.0, 0.0, 0.0))
         # curva direita
-        self.racing_track.append(SegmentRacing(200, 2.0, 0.01, 0.0))
+        self.racing_track.append(SegmentRacing(1, 2.0, 0.001, 0.0))
         # curva direita (reverted)
-        self.racing_track.append(SegmentRacing(70, 2.0, -0.01, 0.0))
+        self.racing_track.append(SegmentRacing(1, 2.0, -0.001, 0.0))
         # hill
-        self.racing_track.append(SegmentRacing(70, 2.0, 0.0, 0.1))
+        self.racing_track.append(SegmentRacing(1, 2.0, 0.0, 0.01))
         # hill (reverted)
-        self.racing_track.append(SegmentRacing(70, 1.0, 0.0, -0.1))
+        self.racing_track.append(SegmentRacing(1, 1.0, 0.0, -0.01))
         # curva esquerda
-        self.racing_track.append(SegmentRacing(90, 1.0, -0.015, -0.3))
+        self.racing_track.append(SegmentRacing(1, 1.0, -0.0015, -0.03))
         # curva esquerda (reverted)
-        self.racing_track.append(SegmentRacing(90, 1.0, 0.015, 0.3))
+        self.racing_track.append(SegmentRacing(1, 1.0, 0.0015, 0.03))
         # reta
-        self.racing_track.append(SegmentRacing(200, 1.0, 0.0, 0.0))
+        self.racing_track.append(SegmentRacing(1, 1.0, 0.0, 0.0))
 
         logging.info(f"Racing track: {self.racing_track}")
 

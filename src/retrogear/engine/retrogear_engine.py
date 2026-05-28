@@ -6,9 +6,13 @@ from src.retrogear.interface.engine_interface import IEngine
 from src.retrogear.render.racing_render import RacingRender
 
 from src.retrogear.racing.track_racing import TrackRacing
+
 from src.retrogear.racing.segment_racing import SegmentRacing
+from src.retrogear.racing.segment_colors_racing import SegmentColorsRacing
+from src.retrogear.racing.segment_objects_racing import SegmentObjectsRacing
 
 from src.retrogear.utils.color_palette import ColorPalette
+from src.retrogear.utils.math_tools import MathTools
 
 from src.manager.locator_manager import LocatorManager
 
@@ -69,21 +73,26 @@ class RetroGearEngine(IEngine):
         self.racing_render = RacingRender()
         self.racing_track = TrackRacing()
 
+        color_test = SegmentColorsRacing(
+            glass_color_a=MathTools.factor_tupla(ColorPalette.GRASS_A, 0.7),
+            glass_color_b=MathTools.factor_tupla(ColorPalette.GRASS_B, 0.7),
+        )
+
         # reta
         self.racing_track.append(SegmentRacing(1, 1.0, 0.0, 0.0))
         self.racing_track.append(SegmentRacing(1, 2.0, 0.0, 0.0))
         # curva direita
         self.racing_track.append(SegmentRacing(1, 2.0, 0.001, 0.0))
         # curva direita (reverted)
-        self.racing_track.append(SegmentRacing(1, 2.0, -0.001, 0.0))
+        self.racing_track.append(SegmentRacing(1, 2.0, -0.001, 0.0, color_test))
         # hill
-        self.racing_track.append(SegmentRacing(1, 2.0, 0.0, 0.01))
+        self.racing_track.append(SegmentRacing(1, 2.0, 0.0, 0.2))
         # hill (reverted)
-        self.racing_track.append(SegmentRacing(1, 1.0, 0.0, -0.01))
+        self.racing_track.append(SegmentRacing(1, 1.0, 0.0, -0.2, color_test))
         # curva esquerda
-        self.racing_track.append(SegmentRacing(1, 1.0, -0.0015, -0.03))
+        self.racing_track.append(SegmentRacing(1, 1.0, -0.002, -0.1))
         # curva esquerda (reverted)
-        self.racing_track.append(SegmentRacing(1, 1.0, 0.0015, 0.03))
+        self.racing_track.append(SegmentRacing(1, 1.0, 0.002, 0.1, color_test))
         # reta
         self.racing_track.append(SegmentRacing(1, 1.0, 0.0, 0.0))
 

@@ -60,3 +60,6 @@ class MathTools():
     @staticmethod
     def avarage_tuple(t_a: tuple, t_b: tuple):
         return tuple((a + b) * 0.5 for a, b in zip(t_a, t_b))
+    
+    def factor_tupla(t:tuple, factor:float):
+        return tuple(a * factor for a in t)

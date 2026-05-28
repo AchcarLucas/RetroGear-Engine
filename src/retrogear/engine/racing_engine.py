@@ -240,7 +240,7 @@ class RacingEngine(IEngine):
 
         line_left = line_right = road.center_road
 
-        offset = road_width_normalized * (0.16)
+        offset = road_width_normalized * (0.165)
 
         for i in range(1, lanes):
             offset = offset * i
@@ -276,21 +276,21 @@ class RacingEngine(IEngine):
             stribe_color = ColorPalette.LANE_BORDER_B
 
         road_width_normalized = MathTools.normalize(road.road_width / road.width_factor, 0.0, 1.0)
-        lane_factor = road_width_normalized * SettingsRacing.LANE_BORDER_RATIO
+        lane_width_factor = road_width_normalized * SettingsRacing.LANE_BORDER_RATIO
 
         # Left Line
         pygame.draw.line(
            screen, 
            stribe_color,
-           (road.left_road, road.relative_z), 
-           (road.left_road + lane_factor, road.relative_z)
+           (road.left_road - lane_width_factor, road.relative_z), 
+           (road.left_road + lane_width_factor, road.relative_z)
         )
     
         # Right Line
         pygame.draw.line(
            screen, 
            stribe_color,
-           (road.right_road, road.relative_z), 
-           (road.right_road + lane_factor, road.relative_z)
+           (road.right_road - lane_width_factor, road.relative_z), 
+           (road.right_road + lane_width_factor, road.relative_z)
         )
 

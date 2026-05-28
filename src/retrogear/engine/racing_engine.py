@@ -92,7 +92,7 @@ class RacingEngine(IEngine):
         stribe_perspective = inverse_perspective / factor
 
         stribe = road.relative_z * stribe_perspective
-        displacement = (self.camera_z * self.speed) / factor
+        displacement = (self.camera_z * self.speed * 0.39) / factor
 
         phase = stribe + displacement
 
@@ -141,8 +141,6 @@ class RacingEngine(IEngine):
 
         for slice_z in reversed(range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z)):
             world_z = self.camera_z + (SettingsRacing.MAX_VISIBLE_SLICE_Z - slice_z)
-
-            print(f"\tworld_z: {world_z},\n\tself.camera_z: {self.camera_z}")
 
             segment_a = self.racing_track.get_racing_sub_segment(distance=world_z)
             segment_b = self.racing_track.get_racing_sub_segment(distance=world_z + 1)

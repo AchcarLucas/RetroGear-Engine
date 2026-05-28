@@ -162,8 +162,8 @@ class RacingRender(IEngine):
             colors : ColorsRacing = SegmentColorsRacing.avarage(segment_a.racing_colors, segment_b.racing_colors)
             objects : ObjectsRacing = SegmentObjectsRacing.join(segment_a.racing_objects, segment_b.racing_objects)
             
-            relative_a = int(road_a.relative_z)
-            relative_b = int(road_b.relative_z)
+            relative_a = int(road_a.relative_z) - 1
+            relative_b = int(road_b.relative_z) + 1
 
             dy = relative_b - relative_a
 
@@ -172,7 +172,7 @@ class RacingRender(IEngine):
 
             last_relative = relative_b
 
-            for (relative_z) in range(relative_a, relative_b + 1):
+            for (relative_z) in range(relative_a, relative_b):
                 t = (relative_z - relative_a) / dy
                 left_road = MathTools.lerp(road_a.left_road, road_b.left_road, t)
                 right_road = MathTools.lerp(road_a.right_road, road_b.right_road, t)

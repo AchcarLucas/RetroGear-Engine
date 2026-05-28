@@ -86,13 +86,13 @@ class RetroGearEngine(IEngine):
         # curva direita (reverted)
         self.racing_track.append(SegmentRacing(1, 2.0, -0.001, 0.0, color_test))
         # hill
-        self.racing_track.append(SegmentRacing(1, 2.0, 0.0, 0.2))
+        self.racing_track.append(SegmentRacing(1, 2.0, 0.0, 0.06))
         # hill (reverted)
-        self.racing_track.append(SegmentRacing(1, 1.0, 0.0, -0.2, color_test))
+        self.racing_track.append(SegmentRacing(1, 1.0, 0.0, -0.06, color_test))
         # curva esquerda
-        self.racing_track.append(SegmentRacing(1, 1.0, -0.002, -0.1))
+        self.racing_track.append(SegmentRacing(1, 1.0, -0.002, -0.06))
         # curva esquerda (reverted)
-        self.racing_track.append(SegmentRacing(1, 1.0, 0.002, 0.1, color_test))
+        self.racing_track.append(SegmentRacing(1, 1.0, 0.002, 0.06, color_test))
         # reta
         self.racing_track.append(SegmentRacing(1, 1.0, 0.0, 0.0))
 

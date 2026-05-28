@@ -25,4 +25,4 @@ class SettingsRacing():
     LANE_TRACK_STRIBE_FACTOR = 120.0
     LANE_TRACK_WIDTH_FACTOR = 0.015
 
-    SPEED_TEST = 70.0
+    SPEED_TEST = 60.0

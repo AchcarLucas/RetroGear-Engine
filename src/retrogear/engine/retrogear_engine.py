@@ -3,7 +3,7 @@ import sys
 
 from src.retrogear.interface.engine_interface import IEngine
 
-from src.retrogear.engine.racing_render import RacingRender
+from src.retrogear.render.racing_render import RacingRender
 
 from src.retrogear.racing.track_racing import TrackRacing
 from src.retrogear.racing.segment_racing import SegmentRacing

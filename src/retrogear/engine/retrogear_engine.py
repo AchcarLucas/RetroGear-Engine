@@ -3,7 +3,7 @@ import sys
 
 from src.retrogear.interface.engine_interface import IEngine
 
-from src.retrogear.engine.racing_engine import RacingEngine
+from src.retrogear.engine.racing_render import RacingRender
 
 from src.retrogear.racing.track_racing import TrackRacing
 from src.retrogear.racing.segment_racing import SegmentRacing
@@ -66,7 +66,7 @@ class RetroGearEngine(IEngine):
         '''
             Engine testing method
         '''
-        self.racing_render = RacingEngine()
+        self.racing_render = RacingRender()
         self.racing_track = TrackRacing()
 
         # reta

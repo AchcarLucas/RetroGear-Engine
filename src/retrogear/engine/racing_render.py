@@ -20,7 +20,7 @@ env = locator.get_locator('env')
 # getting logging manager
 logging = locator.get_locator('logging')
 
-class RacingEngine(IEngine):
+class RacingRender(IEngine):
     def __init__(self, racing_track: TrackRacing=None):
         self.racing_track = racing_track
 
@@ -187,34 +187,42 @@ class RacingEngine(IEngine):
                     width_factor=segment_a.racing_width_factor
                 )
 
-                self.render_road(
+                self.renderline_road(
                     screen,
-                    road=road
+                    road=road,
+                    colors=colors,
+                    objects=objects
                 )
 
-                self.render_stribe_border_line(
+                self.renderline_stribe_border_line(
                     screen=screen,
-                    road=road
+                    road=road,
+                    colors=colors,
+                    objects=objects
                 )
 
-                self.render_stribe_track_line(
+                self.renderline_stribe_track_line(
                     screen=screen,
-                    road=road
+                    road=road,
+                    colors=colors,
+                    objects=objects
                 )
 
-    def render_road(self,
+    def renderline_road(self,
                     screen,
                     road: RoadRacing,
+                    colors: ColorsRacing,
+                    objects: ObjectsRacing
         ):
         if self.stribe_mod(
             road,
             SettingsRacing.LANE_TRACK_STRIBE_FACTOR
         ):
-            road_color = ColorPalette.ROAD_BRIGHT
-            slope_color = ColorPalette.GRASS_A
+            road_color = colors.road_color_a
+            slope_color = colors.glass_color_a
         else:
-            road_color = ColorPalette.ROAD_DARK
-            slope_color = ColorPalette.GRASS_B
+            road_color = colors.road_color_b
+            slope_color = colors.glass_color_b
 
         pygame.draw.line(
             screen, 
@@ -237,9 +245,11 @@ class RacingEngine(IEngine):
             (env.SCREEN_WIDTH, road.relative_z)
         )
        
-    def render_stribe_track_line(self,
+    def renderline_stribe_border_line(self,
                       screen,
-                      road: RoadRacing
+                      road: RoadRacing,
+                      colors: ColorsRacing,
+                      objects: ObjectsRacing
         ):
     
         if self.stribe_mod(
@@ -248,7 +258,7 @@ class RacingEngine(IEngine):
         ):
             stribe_color = ColorPalette.WHITE
         else:
-            stribe_color = ColorPalette.ROAD_DARK
+            stribe_color = colors.road_color_b
 
 
         lanes = max(2, int(round(road.width_factor / SettingsRacing.MULTILANE_FACTOR)))
@@ -281,17 +291,19 @@ class RacingEngine(IEngine):
                 (line_right + lane_width_factor, road.relative_z)
             )
 
-    def render_stribe_border_line(self,
+    def renderline_stribe_track_line(self,
                       screen,
-                      road: RoadRacing
+                      road: RoadRacing,
+                      colors: ColorsRacing,
+                      objects: ObjectsRacing
         ):
         if self.stribe_mod(
             road,
             SettingsRacing.LANE_BORDER_STRIBE_FACTOR
         ):
-            stribe_color = ColorPalette.LANE_BORDER_A
+            stribe_color = colors.lane_border_color_a
         else:
-            stribe_color = ColorPalette.LANE_BORDER_B
+            stribe_color = colors.lane_border_color_b
 
         road_width_normalized = MathTools.normalize(road.road_width / road.width_factor, 0.0, 1.0)
         lane_width_factor = road_width_normalized * SettingsRacing.LANE_BORDER_WIDTH_FACTOR

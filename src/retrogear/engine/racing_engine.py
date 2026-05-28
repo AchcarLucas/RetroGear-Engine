@@ -126,12 +126,6 @@ class RacingEngine(IEngine):
             return
         
         screen.fill(ColorPalette.SKY)
-
-        pygame.draw.rect(
-            screen,
-            (60, 180, 60),
-            (0, self.center_screen_y, env.SCREEN_WIDTH, env.SCREEN_HEIGHT)
-        )
         
         heading_accumulator = 0.0
         curve_accumulator = 0.0
@@ -209,11 +203,35 @@ class RacingEngine(IEngine):
                     screen,
                     road: RoadRacing,
         ):
-       pygame.draw.line(
-           screen, 
-           ColorPalette.ROAD, 
-           (road.left_road, road.relative_z), 
-           (road.right_road, road.relative_z)
+        if self.stribe_mod(
+            road,
+            SettingsRacing.LANE_TRACK_STRIBE_FACTOR
+        ):
+            road_color = ColorPalette.ROAD_BRIGHT
+            slope_color = ColorPalette.GRASS_A
+        else:
+            road_color = ColorPalette.ROAD_DARK
+            slope_color = ColorPalette.GRASS_B
+
+        pygame.draw.line(
+            screen, 
+            road_color,
+            (road.left_road, road.relative_z),
+            (road.right_road, road.relative_z)
+        )
+
+        pygame.draw.line(
+            screen, 
+            slope_color,
+            (0, road.relative_z),
+            (road.left_road, road.relative_z)
+        )
+
+        pygame.draw.line(
+            screen, 
+            slope_color,
+            (road.right_road, road.relative_z),
+            (env.SCREEN_WIDTH, road.relative_z)
         )
        
     def render_stribe_track_line(self,
@@ -227,7 +245,7 @@ class RacingEngine(IEngine):
         ):
             stribe_color = ColorPalette.WHITE
         else:
-            stribe_color = ColorPalette.ROAD
+            stribe_color = ColorPalette.ROAD_DARK
 
 
         lanes = max(2, int(round(road.width_factor / SettingsRacing.MULTILANE_FACTOR)))

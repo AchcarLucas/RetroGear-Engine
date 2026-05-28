@@ -50,3 +50,9 @@ class MathTools():
         if max_value - min_value == 0:
             return 0
         return (value - min_value) / (max_value - min_value)
+
+    @staticmethod
+    def floor(x):
+        if x >= 0 or x == int(x):
+            return int(x)
+        return int(x) - 1

@@ -1,4 +1,4 @@
-import math
+from src.retrogear.utils.math_tools import MathTools
 
 from typing import List
 
@@ -35,7 +35,7 @@ class TrackRacing():
         return self.subsegments_racing
     
     def get_racing_sub_segment(self, distance) -> SubSegmentRacing:
-        return self.subsegments_racing[math.floor(distance) % len(self.subsegments_racing)]
+        return self.subsegments_racing[MathTools.floor(distance) % len(self.subsegments_racing)]
     
     def get_max_distance(self) -> int:
         return len(self.subsegments_racing)

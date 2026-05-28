@@ -93,13 +93,14 @@ class RacingEngine(IEngine):
         perspective = self.perspective(road.slice_z)
         inverse_perspective = 1.0 / (perspective)
 
-        stribe = int(
-            (road.relative_z) * (inverse_perspective / factor)
-        )
+        stribe_perspective = inverse_perspective / factor
 
-        displacement = int((self.camera_z * self.speed) / factor)
+        stribe = road.relative_z * stribe_perspective
+        displacement = (self.camera_z * self.speed * 0.38) / factor
 
-        return (stribe + displacement) % 2
+        phase = stribe + displacement
+
+        return MathTools.floor(phase) % 2
 
     def event(self, event):
         '''

@@ -1,7 +1,4 @@
-from typing import Self, List
-
 from src.manager.locator_manager import LocatorManager
-from src.retrogear.utils.math_tools import MathTools
 
 locator = LocatorManager()
 

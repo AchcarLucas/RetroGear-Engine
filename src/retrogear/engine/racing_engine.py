@@ -97,7 +97,7 @@ class RacingEngine(IEngine):
             (road.relative_z) * (inverse_perspective / factor)
         )
 
-        displacement = int((self.camera_z * self.speed) / 20.0)
+        displacement = int((self.camera_z * self.speed) / factor)
 
         return (stribe + displacement) % 2
 
@@ -190,6 +190,7 @@ class RacingEngine(IEngine):
                     relative_z=relative_z,
                     absolute_z=world_z,
                     relative_t=t,
+                    width_factor=segment_a.racing_width_factor
                 )
 
                 self.render_road(
@@ -202,7 +203,7 @@ class RacingEngine(IEngine):
                     road=road
                 )
 
-                self.render_stribe_center_line(
+                self.render_stribe_track_line(
                     screen=screen,
                     road=road
                 )
@@ -218,68 +219,78 @@ class RacingEngine(IEngine):
            (road.right_road, road.relative_z)
         )
        
-    def render_stribe_center_line(self,
+    def render_stribe_track_line(self,
                       screen,
                       road: RoadRacing
         ):
-        line_factor = road.road_width * SettingsRacing.LANE_CENTER_RATIO
-
+    
         if self.stribe_mod(
             road,
-            SettingsRacing.LANE_CENTER_FACTOR
+            SettingsRacing.LANE_TRACK_FACTOR
         ):
-            border_color = ColorPalette.WHITE
+            stribe_color = ColorPalette.WHITE
         else:
-            border_color = ColorPalette.ROAD
+            stribe_color = ColorPalette.ROAD
 
-        road_offset = road.road_width * 0.385
 
-        line_left = (road.left_road) + road_offset
-        line_right = (road.right_road) - road_offset
+        lanes = max(2, int(round(road.width_factor / SettingsRacing.LANE_RANGE_FACTOR)))
 
-        # Left Line
-        pygame.draw.line(
-           screen, 
-           border_color, 
-           (line_left - line_factor, road.relative_z),
-           (line_left + line_factor, road.relative_z)
-        )
+        road_width_normalized = MathTools.normalize(road.road_width / road.width_factor, 0.0, 1.0)
+        lane_width_factor = road_width_normalized * SettingsRacing.LANE_TRACK_RATIO
 
-        # Right Line
-        pygame.draw.line(
-           screen, 
-           border_color, 
-           (line_right - line_factor, road.relative_z),
-           (line_right + line_factor, road.relative_z)
-        )
+        line_left = line_right = road.center_road
+
+        offset = road_width_normalized * (0.16)
+
+        for i in range(1, lanes):
+            offset = offset * i
+            line_left += offset
+            line_right -= offset
+
+            # Left Line
+            pygame.draw.line(
+                screen, 
+                stribe_color, 
+                (line_left - lane_width_factor, road.relative_z),
+                (line_left + lane_width_factor, road.relative_z)
+            )
+
+            # Right Line
+            pygame.draw.line(
+                screen, 
+                stribe_color, 
+                (line_right - lane_width_factor, road.relative_z),
+                (line_right + lane_width_factor, road.relative_z)
+            )
 
     def render_stribe_border_line(self,
                       screen,
                       road: RoadRacing
         ):
-        line_factor = road.road_width * SettingsRacing.LANE_BORDER_RATIO
-
         if self.stribe_mod(
             road,
             SettingsRacing.LANE_BORDER_FACTOR
         ):
-            border_color = ColorPalette.LANE_BORDER_A
+            stribe_color = ColorPalette.LANE_BORDER_A
         else:
-            border_color = ColorPalette.LANE_BORDER_B
+            stribe_color = ColorPalette.LANE_BORDER_B
+
+        road_width_normalized = MathTools.normalize(road.road_width / road.width_factor, 0.0, 1.0)
+        lane_factor = road_width_normalized * SettingsRacing.LANE_BORDER_RATIO
 
         # Left Line
         pygame.draw.line(
            screen, 
-           border_color, 
+           stribe_color,
            (road.left_road, road.relative_z), 
-           (road.left_road + line_factor, road.relative_z)
+           (road.left_road + lane_factor, road.relative_z)
         )
     
         # Right Line
         pygame.draw.line(
            screen, 
-           border_color, 
+           stribe_color,
            (road.right_road, road.relative_z), 
-           (road.right_road + line_factor, road.relative_z)
+           (road.right_road + lane_factor, road.relative_z)
         )
 

@@ -44,3 +44,9 @@ class MathTools():
             return -max_abs_value
         else:
             return value
+        
+    @staticmethod
+    def normalize(value: float, min_value: float, max_value: float) -> float:
+        if max_value - min_value == 0:
+            return 0
+        return (value - min_value) / (max_value - min_value)

@@ -56,3 +56,7 @@ class MathTools():
         if x >= 0 or x == int(x):
             return int(x)
         return int(x) - 1
+    
+    @staticmethod
+    def avarage_tuple(t_a: tuple, t_b: tuple):
+        return tuple((a + b) * 8.5 for a, b in zip(t_a, t_b))

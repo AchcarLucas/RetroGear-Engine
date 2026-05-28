@@ -3,9 +3,9 @@ import pygame
 from src.retrogear.interface.engine_interface import IEngine
 
 from src.retrogear.racing.track_racing import TrackRacing
-from src.retrogear.racing.segment_racing import SubSegmentRacing
+from src.retrogear.racing.segment_racing import SubSegmentRacing, SegmentColorsRacing, SegmentObjectsRacing
 from src.retrogear.racing.settings_racing import SettingsRacing
-from src.retrogear.racing.road_racing import RoadRacing
+from src.retrogear.racing.road_racing import RoadRacing, ColorsRacing, ObjectsRacing
 
 from src.retrogear.utils.color_palette import ColorPalette
 from src.retrogear.utils.math_tools import MathTools
@@ -158,6 +158,9 @@ class RacingEngine(IEngine):
                 elevator_accumulator=elevator_accumulator,
                 width_factor=segment_a.racing_width_factor
             )
+
+            colors : ColorsRacing = SegmentColorsRacing.avarage(segment_a.racing_colors, segment_b.racing_colors)
+            objects : ObjectsRacing = SegmentObjectsRacing.join(segment_a.racing_objects, segment_b.racing_objects)
             
             relative_a = int(road_a.relative_z)
             relative_b = int(road_b.relative_z)

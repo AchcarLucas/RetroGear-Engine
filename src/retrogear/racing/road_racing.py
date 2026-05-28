@@ -1,5 +1,8 @@
 from src.manager.locator_manager import LocatorManager
 
+from src.retrogear.racing.segment_objects_racing import SegmentObjectsRacing
+from src.retrogear.racing.segment_colors_racing import SegmentColorsRacing
+
 locator = LocatorManager()
 
 # getting configuration manager
@@ -7,6 +10,14 @@ env = locator.get_locator('env')
 
 # getting logging manager
 logging = locator.get_locator('logging')
+
+class ObjectsRacing(SegmentObjectsRacing):
+    def __init__(self):
+        pass
+
+class ColorsRacing(SegmentColorsRacing):
+    def __init__(self):
+        pass
 
 class RoadRacing():
     def __init__(self,

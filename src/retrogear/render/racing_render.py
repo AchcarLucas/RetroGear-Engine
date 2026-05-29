@@ -64,10 +64,10 @@ class RacingRender(IEngine):
         perspective = self.perspective(slice_z)
         inverse_perspective = 1.0 / perspective
 
-        screen_x = self.center_screen_x + (curve_accumulator * inverse_perspective)
+        screen_x = self.center_screen_x + (curve_accumulator)
         
         depth_y = SettingsRacing.DEPTH_SLICE_FACTOR * slice_z
-        hill_y = elevator_accumulator * inverse_perspective
+        hill_y = elevator_accumulator
         relative_z = self.center_screen_y + depth_y - hill_y
     
         road_width = (env.SCREEN_WIDTH * SettingsRacing.PERSPECTIVE_FACTOR) * width_factor * perspective

@@ -228,6 +228,7 @@ class RacingRender(IEngine):
             road_color = colors.road_color_b
             slope_color = colors.glass_color_b
 
+        # draw road
         pygame.draw.line(
             screen, 
             road_color,
@@ -235,6 +236,7 @@ class RacingRender(IEngine):
             (road.right_road, road.relative_z)
         )
 
+        # draw slope (left and right)
         pygame.draw.line(
             screen, 
             slope_color,

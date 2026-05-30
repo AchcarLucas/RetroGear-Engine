@@ -80,7 +80,7 @@ class RetroGearEngine(IEngine):
 
         # reta
         self.racing_track.append(SegmentRacing(15, 1.0, 0.0, 0.0, color_test))
-        self.racing_track.append(SegmentRacing(12, 2.0, 0.2, 0.3))
+        self.racing_track.append(SegmentRacing(12, 2.0, 0.0, 0.3))
         self.racing_track.append(SegmentRacing(10, 1.0, 0.0, -0.3, color_test))
         # curva direita
         self.racing_track.append(SegmentRacing(10, 2.0, 0.3, 0.0, color_test))

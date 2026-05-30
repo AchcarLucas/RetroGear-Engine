@@ -9,7 +9,7 @@ env = locator.get_locator('env')
 logging = locator.get_locator('logging')
 
 class SettingsRacing():
-    DEPTH_FACTOR = 0.01
+    DEPTH_FACTOR = 0.03
 
     DISTANCE_PER_LENGTH = 10
 
@@ -23,6 +23,6 @@ class SettingsRacing():
     LANE_BORDER_WIDTH_FACTOR = 0.04
 
     LANE_TRACK_STRIBE_FACTOR = 3.0
-    LANE_TRACK_WIDTH_FACTOR = 0.015
+    LANE_TRACK_WIDTH_FACTOR = 0.03
 
     SPEED_TEST = 20.0

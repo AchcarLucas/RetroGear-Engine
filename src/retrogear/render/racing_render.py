@@ -1,4 +1,5 @@
 import pygame
+import math
 
 from src.retrogear.interface.engine_interface import IEngine
 
@@ -29,12 +30,11 @@ class RacingRender(IEngine):
 
         self.depth: float = SettingsRacing.MAX_VISIBLE_SLICE_Z * SettingsRacing.DEPTH_FACTOR
 
-        self.current_segment: SubSegmentRacing = None
-        self.previous_segment: SubSegmentRacing = None
+        self.dt_accumulator: float = 0.0
 
         self.laps: int = 0
         self.camera_z: float = 0.0
-        self.camera_side_offset: float = 0.0
+        self.camera_offset: float = 0.0
 
         self.speed = SettingsRacing.SPEED_TEST
 
@@ -52,7 +52,7 @@ class RacingRender(IEngine):
     def project(
             self,
             slice_z: int,
-            side_offset: int,
+            x_offset: int,
             curve_accumulator: int,
             elevator_accumulator: int,
             width_factor: float=1.0
@@ -60,11 +60,11 @@ class RacingRender(IEngine):
         perspective = self.perspective(slice_z)
 
         relative_z = self.center_screen_y - elevator_accumulator + (SettingsRacing.CAMERA_HEIGHT * perspective)
-        relative_x = self.center_screen_x + (curve_accumulator * perspective)
+        relative_x = self.center_screen_x + (curve_accumulator + x_offset) * perspective
 
         road_width = env.SCREEN_WIDTH * (width_factor * perspective) * SettingsRacing.ROAD_WIDTH_PERSPECTIVE
-        left_road = int(relative_x - road_width) + side_offset
-        right_road = int(relative_x + road_width) + side_offset
+        left_road = int(relative_x - road_width)
+        right_road = int(relative_x + road_width)
 
         return RoadRacing(
             slice_z=slice_z,
@@ -93,7 +93,7 @@ class RacingRender(IEngine):
 
             road: RoadRacing = self.project(
                 slice_z=slice_z,
-                side_offset=0,
+                x_offset=self.camera_offset,
                 curve_accumulator=curve_accumulator,
                 elevator_accumulator=elevator_accumulator,
                 width_factor=segment.racing_width_factor
@@ -168,8 +168,12 @@ class RacingRender(IEngine):
         """
         previous_camera_z = self.camera_z
 
+        self.dt_accumulator += delta_time
+
         self.camera_z += (delta_time * self.speed)
         self.camera_z %= self.racing_track.get_max_distance()
+
+        self.camera_offset = 300.0 * math.sin(self.dt_accumulator)
 
         # a reset occurred, reset the accumulators and the camera distance to remove any residue.
         if previous_camera_z > self.camera_z:
@@ -273,15 +277,15 @@ class RacingRender(IEngine):
 
         line_left = line_right = road.center_road
 
-        offset = road_width_normalized * 0.5
+        offset = road_width_normalized * 0.65
 
         for i in range(0, n_lanes):
             if i == 0:
                 line_left += offset / 2
                 line_right -= offset / 2
             else:
-                line_left += offset * 1.5
-                line_right -= offset * 1.5
+                line_left += offset
+                line_right -= offset
 
             # Left Line
             pygame.draw.line(

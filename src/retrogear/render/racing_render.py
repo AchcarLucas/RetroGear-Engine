@@ -27,7 +27,7 @@ class RacingRender(IEngine):
         self.center_screen_x: int = env.SCREEN_WIDTH // 2
         self.center_screen_y: int = env.SCREEN_HEIGHT // 2
 
-        self.depth: float = (self.center_screen_y / SettingsRacing.MAX_VISIBLE_SLICE_Z) * SettingsRacing.DEPTH_FACTOR
+        self.depth: float = SettingsRacing.MAX_VISIBLE_SLICE_Z * SettingsRacing.DEPTH_FACTOR
 
         self.current_segment: SubSegmentRacing = None
         self.previous_segment: SubSegmentRacing = None
@@ -46,12 +46,8 @@ class RacingRender(IEngine):
         """
         self.racing_track = racing_track
 
-    @property
-    def maximum_y(self):
-        return self.center_screen_y
-
     def perspective(self, distance: float):
-        return self.depth * (distance + SettingsRacing.PERSPECTIVE_OFFSET)
+        return self.depth / (distance + 0.1)
 
     def project(
             self,
@@ -62,39 +58,31 @@ class RacingRender(IEngine):
             width_factor: float=1.0
         ) -> RoadRacing:
         perspective = self.perspective(slice_z)
-        inverse_perspective = 1.0 / perspective
 
-        screen_x = self.center_screen_x + (curve_accumulator)
-        
-        depth_y = SettingsRacing.DEPTH_SLICE_FACTOR * slice_z
-        hill_y = elevator_accumulator
-        relative_z = self.center_screen_y + depth_y - hill_y
-    
-        road_width = (env.SCREEN_WIDTH * SettingsRacing.PERSPECTIVE_FACTOR) * width_factor * perspective
+        relative_z = self.center_screen_y - elevator_accumulator + (SettingsRacing.CAMERA_HEIGHT * perspective)
+        relative_x = self.center_screen_x + (curve_accumulator * perspective)
 
-        left_road = int(screen_x - road_width) + side_offset
-        right_road = int(screen_x + road_width) + side_offset
+        road_width = env.SCREEN_WIDTH * (width_factor * perspective) * SettingsRacing.ROAD_WIDTH_PERSPECTIVE
+        left_road = int(relative_x - road_width) + side_offset
+        right_road = int(relative_x + road_width) + side_offset
 
         return RoadRacing(
+            slice_z=slice_z,
             left_road=left_road,
             right_road=right_road,
-            relative_z=relative_z
+            relative_z=relative_z  
         )
     
     def stribe_mod(self,
             road: RoadRacing,
             factor:float = 120.0,
         ) -> bool:
+    
+        factor *= 0.05
+        stribe = road.slice_z / factor
+        displacement = self.camera_z / factor
 
-        perspective = self.perspective(road.slice_z)
-        inverse_perspective = 1.0 / (perspective)
-
-        stribe_perspective = inverse_perspective / factor
-
-        stribe = road.relative_z * stribe_perspective
-        displacement = (self.camera_z * self.speed * 0.39) / factor
-
-        phase = stribe + displacement
+        phase = (stribe + displacement)
 
         return MathTools.floor(phase) % 2
 
@@ -124,91 +112,78 @@ class RacingRender(IEngine):
         """
         if self.racing_track is None:
             return
-        
-        screen.fill(ColorPalette.SKY)
-        
+
         heading_accumulator = 0.0
         curve_accumulator = 0.0
         elevator_accumulator = 0.0
 
-        last_relative = env.SCREEN_HEIGHT
+        tmp_road: [RoadRacing] = []
 
-        for slice_z in reversed(range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z)):
-            world_z = self.camera_z + (SettingsRacing.MAX_VISIBLE_SLICE_Z - slice_z)
+        # road project
+        for slice_z in range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z):
+            world_z = self.camera_z + slice_z
 
-            segment_a = self.racing_track.get_racing_sub_segment(distance=world_z)
-            segment_b = self.racing_track.get_racing_sub_segment(distance=world_z + 1)
+            segment = self.racing_track.get_racing_sub_segment(distance=world_z)
 
-            road_a: RoadRacing = self.project(
-                slice_z=slice_z,
-                side_offset=self.camera_side_offset,
-                curve_accumulator=curve_accumulator,
-                elevator_accumulator=elevator_accumulator,
-                width_factor=segment_a.racing_width_factor
-            )
-
-            heading_accumulator += (segment_a.racing_curve_factor + segment_b.racing_curve_factor) * 0.5
+            heading_accumulator += segment.racing_curve_factor
             curve_accumulator += heading_accumulator
-            elevator_accumulator += (segment_a.racing_elevation_factor + segment_b.racing_elevation_factor) * 0.5
+            elevator_accumulator += segment.racing_elevation_factor
 
-            road_b: RoadRacing = self.project(
-                slice_z=slice_z + 1,
-                side_offset=self.camera_side_offset,
+            road: RoadRacing = self.project(
+                slice_z=slice_z,
+                side_offset=0,
                 curve_accumulator=curve_accumulator,
                 elevator_accumulator=elevator_accumulator,
-                width_factor=segment_a.racing_width_factor
+                width_factor=segment.racing_width_factor
             )
 
-            colors : ColorsRacing = SegmentColorsRacing.avarage(segment_a.racing_colors, segment_b.racing_colors)
-            objects : ObjectsRacing = SegmentObjectsRacing.join(segment_a.racing_objects, segment_b.racing_objects)
-            
-            relative_a = int(road_a.relative_z) - 1
-            relative_b = int(road_b.relative_z) + 1
+            tmp_road.append((road, segment))
 
-            dy = relative_b - relative_a
+        render_road: [RoadRacing] = []
 
-            if relative_b >= last_relative or dy <= 0:
+        # road lerp
+        for index_road in range(1, len(tmp_road)):
+            road: RoadRacing = tmp_road[index_road - 1][0]
+            segment: SubSegmentRacing = tmp_road[index_road - 1][1]
+
+            road_next: RoadRacing = tmp_road[index_road][0]
+            # segment_next: SubSegmentRacing = tmp_road[index_road][1]
+
+            dy = road.relative_z - road_next.relative_z
+
+            # If the segment is behind something already drawn (hill clipping), we ignore it.
+            if dy <= 0.00:
                 continue
 
-            last_relative = relative_b
+            relative = int(MathTools.ceil(road.relative_z))
+            relative_next = int(MathTools.ceil(road_next.relative_z))
 
-            for (relative_z) in range(relative_a, relative_b):
-                t = (relative_z - relative_a) / dy
-                left_road = MathTools.lerp(road_a.left_road, road_b.left_road, t)
-                right_road = MathTools.lerp(road_a.right_road, road_b.right_road, t)
-
-                road = RoadRacing(
+            for relative_z in range(relative_next, relative):
+                t = (relative_z - relative_next) / dy
+                left_road = MathTools.lerp(road_next.left_road, road.left_road, t)
+                right_road = MathTools.lerp(road_next.right_road, road.right_road, t)
+                
+                t_road:RoadRacing = RoadRacing(
                     left_road=left_road,
                     right_road=right_road,
-                    slice_z=slice_z,
+                    slice_z=road.slice_z, # Usado para padrao de cores (stribe)
                     relative_z=relative_z,
-                    absolute_z=world_z,
+                    absolute_z=road.absolute_z,
                     relative_t=t,
-                    width_factor=segment_a.racing_width_factor
+                    width_factor=road.width_factor,
                 )
+                
+                render_road.append((t_road, segment))
+            
+        # road draw
+        screen.fill(ColorPalette.SKY)
 
-                self.renderline_road(
-                    screen,
-                    road=road,
-                    colors=colors,
-                    objects=objects
-                )
+        for road, segment in reversed(render_road):
+            self.render_road(screen, road=road, colors=segment.racing_colors, objects=segment.racing_objects)
+            self.render_stribe_border_line(screen=screen, road=road, colors=segment.racing_colors, objects=segment.racing_objects)
+            self.render_stribe_track_line(screen=screen, road=road, colors=segment.racing_colors, objects=segment.racing_objects)
 
-                self.renderline_stribe_border_line(
-                    screen=screen,
-                    road=road,
-                    colors=colors,
-                    objects=objects
-                )
-
-                self.renderline_stribe_track_line(
-                    screen=screen,
-                    road=road,
-                    colors=colors,
-                    objects=objects
-                )
-
-    def renderline_road(self,
+    def render_road(self,
                     screen,
                     road: RoadRacing,
                     colors: ColorsRacing,
@@ -245,7 +220,7 @@ class RacingRender(IEngine):
             (env.SCREEN_WIDTH, road.relative_z)
         )
        
-    def renderline_stribe_border_line(self,
+    def render_stribe_border_line(self,
                       screen,
                       road: RoadRacing,
                       colors: ColorsRacing,
@@ -291,7 +266,7 @@ class RacingRender(IEngine):
                 (line_right + lane_width_factor, road.relative_z)
             )
 
-    def renderline_stribe_track_line(self,
+    def render_stribe_track_line(self,
                       screen,
                       road: RoadRacing,
                       colors: ColorsRacing,

@@ -1,5 +1,10 @@
 # RetroGear - Engine
 
+### Preview
+![Meu GIF](preview/preview.gif)
+
+### Configuration and Installation
+
 1) Create the venv
 
 ```
@@ -24,7 +29,8 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-5) Run the RetroGear - Engine
+### Run the RetroGear - Engine
+
 
 ```
 python3 -m src.main

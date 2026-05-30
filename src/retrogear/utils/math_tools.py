@@ -10,6 +10,13 @@ class MathTools():
         return (value - start) / (end - start)
     
     @staticmethod
+    def discrete_lerp_int(a: int, b: int, t_atual: int, t_max: int) -> int:
+        return a + ((b - a) * t_atual + (t_max // 2)) // t_max
+    
+    def discrete_lerp_float(a: int, b: int, t: float) -> int:
+        return round(a + t * (b - a))
+    
+    @staticmethod
     def clamp(value, min_value, max_value):
         return max(min_value, min(value, max_value))
     

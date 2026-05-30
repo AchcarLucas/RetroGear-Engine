@@ -57,6 +57,9 @@ class MathTools():
             return int(x)
         return int(x) - 1
     
+    def ceil(x):
+        return -(-x // 1)
+    
     @staticmethod
     def avarage_tuple(t_a: tuple, t_b: tuple):
         return tuple((a + b) * 0.5 for a, b in zip(t_a, t_b))

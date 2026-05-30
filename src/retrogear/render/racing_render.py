@@ -115,12 +115,17 @@ class RacingRender(IEngine):
 
             dy = current_road.relative_z - road_next.relative_z
 
-            # If the segment is behind something already drawn (hill clipping), we ignore it.
-            if dy <= 0.00:
+            # if the segment is behind something already drawn (hill clipping), we ignore it.
+            if dy <= 0.0:
                 continue
 
             relative_current = int(MathTools.ceil(current_road.relative_z))
             relative_next = int(MathTools.ceil(road_next.relative_z))
+
+            # ignore everything outside the screen.
+            if  relative_current <= 0.0 or \
+                relative_current >= env.SCREEN_HEIGHT * 1.2:
+                continue
 
             # lerp road with current road and next road
             for relative_z in range(relative_next, relative_current):

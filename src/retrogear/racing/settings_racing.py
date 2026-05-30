@@ -11,6 +11,8 @@ logging = locator.get_locator('logging')
 class SettingsRacing():
     DEPTH_FACTOR = 0.01
 
+    DISTANCE_PER_LENGTH = 10
+
     CAMERA_HEIGHT = 150.0
 
     ROAD_WIDTH_PERSPECTIVE = 0.42

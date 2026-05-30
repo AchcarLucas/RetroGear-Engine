@@ -3,6 +3,7 @@ from src.retrogear.utils.math_tools import MathTools
 from typing import List
 
 from src.retrogear.racing.segment_racing import SegmentRacing, SubSegmentRacing
+from src.retrogear.racing.settings_racing import SettingsRacing
 
 from src.manager.locator_manager import LocatorManager
 
@@ -25,7 +26,7 @@ class TrackRacing():
 
     def append(self, segment_racing: SegmentRacing):
         self.segments_racing.append(segment_racing)
-        for _ in range(segment_racing.racing_length * env.DISTANCE_PER_LENGTH):
+        for _ in range(segment_racing.racing_length * SettingsRacing.DISTANCE_PER_LENGTH):
             self.subsegments_racing.append(SubSegmentRacing.from_parent(segment_racing))
 
     def get_list_racing_segments(self) -> List[SegmentRacing]:

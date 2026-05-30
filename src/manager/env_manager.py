@@ -19,8 +19,6 @@ class EnvManager(metaclass=SingletonMeta):
 
         self.FPS = int(self.get_env("FPS", 60))
 
-        self.DISTANCE_PER_LENGTH = int(self.get_env("DISTANCE_PER_LENGTH", 2))
-
     def get_env(self, key, otherwise=None):
         return os.getenv(key, otherwise)
     

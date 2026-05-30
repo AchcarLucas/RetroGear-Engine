@@ -119,7 +119,7 @@ class RacingRender(IEngine):
 
         tmp_road: [RoadRacing] = []
 
-        # road project
+        # project road
         for slice_z in range(0, SettingsRacing.MAX_VISIBLE_SLICE_Z):
             world_z = self.camera_z + slice_z
 
@@ -141,7 +141,7 @@ class RacingRender(IEngine):
 
         render_road: [RoadRacing] = []
 
-        # road lerp
+        # lerp road line to next road line 
         for index_road in range(1, len(tmp_road)):
             road: RoadRacing = tmp_road[index_road - 1][0]
             road_next: RoadRacing = tmp_road[index_road][0]
@@ -176,7 +176,7 @@ class RacingRender(IEngine):
                 
                 render_road.append((t_road, segment))
             
-        # road draw
+        # draw road line
         screen.fill(ColorPalette.SKY)
 
         for road, segment in reversed(render_road):

@@ -70,7 +70,8 @@ class RacingRender(IEngine):
             slice_z=slice_z,
             left_road=left_road,
             right_road=right_road,
-            relative_z=relative_z  
+            relative_z=relative_z,
+            width_factor=width_factor
         )
     
     def stribe_mod(self,
@@ -78,7 +79,6 @@ class RacingRender(IEngine):
             factor:float = 120.0,
         ) -> bool:
     
-        factor *= 0.05
         stribe = road.slice_z / factor
         displacement = self.camera_z / factor
 
@@ -144,10 +144,9 @@ class RacingRender(IEngine):
         # road lerp
         for index_road in range(1, len(tmp_road)):
             road: RoadRacing = tmp_road[index_road - 1][0]
-            segment: SubSegmentRacing = tmp_road[index_road - 1][1]
-
             road_next: RoadRacing = tmp_road[index_road][0]
-            # segment_next: SubSegmentRacing = tmp_road[index_road][1]
+
+            segment: SubSegmentRacing = tmp_road[index_road - 1][1]
 
             dy = road.relative_z - road_next.relative_z
 
@@ -160,17 +159,19 @@ class RacingRender(IEngine):
 
             for relative_z in range(relative_next, relative):
                 t = (relative_z - relative_next) / dy
+
                 left_road = MathTools.lerp(road_next.left_road, road.left_road, t)
                 right_road = MathTools.lerp(road_next.right_road, road.right_road, t)
-                
+                width_road = MathTools.lerp(road_next.width_factor, road.width_factor, t)
+
                 t_road:RoadRacing = RoadRacing(
                     left_road=left_road,
                     right_road=right_road,
-                    slice_z=road.slice_z, # Usado para padrao de cores (stribe)
+                    slice_z=road.slice_z,
                     relative_z=relative_z,
                     absolute_z=road.absolute_z,
                     relative_t=t,
-                    width_factor=road.width_factor,
+                    width_factor=width_road
                 )
                 
                 render_road.append((t_road, segment))
@@ -180,8 +181,8 @@ class RacingRender(IEngine):
 
         for road, segment in reversed(render_road):
             self.render_road(screen, road=road, colors=segment.racing_colors, objects=segment.racing_objects)
-            self.render_stribe_border_line(screen=screen, road=road, colors=segment.racing_colors, objects=segment.racing_objects)
             self.render_stribe_track_line(screen=screen, road=road, colors=segment.racing_colors, objects=segment.racing_objects)
+            self.render_stribe_border_line(screen=screen, road=road, colors=segment.racing_colors, objects=segment.racing_objects)
 
     def render_road(self,
                     screen,
@@ -220,7 +221,7 @@ class RacingRender(IEngine):
             (env.SCREEN_WIDTH, road.relative_z)
         )
        
-    def render_stribe_border_line(self,
+    def render_stribe_track_line(self,
                       screen,
                       road: RoadRacing,
                       colors: ColorsRacing,
@@ -266,7 +267,7 @@ class RacingRender(IEngine):
                 (line_right + lane_width_factor, road.relative_z)
             )
 
-    def render_stribe_track_line(self,
+    def render_stribe_border_line(self,
                       screen,
                       road: RoadRacing,
                       colors: ColorsRacing,

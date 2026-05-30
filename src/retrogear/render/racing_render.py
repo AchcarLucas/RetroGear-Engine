@@ -236,7 +236,6 @@ class RacingRender(IEngine):
         else:
             stribe_color = colors.road_color_b
 
-
         lanes = max(2, int(round(road.width_factor / SettingsRacing.MULTILANE_FACTOR)))
 
         road_width_normalized = MathTools.normalize(road.road_width / road.width_factor, 0.0, 1.0)
@@ -244,7 +243,7 @@ class RacingRender(IEngine):
 
         line_left = line_right = road.center_road
 
-        offset = road_width_normalized * (0.165)
+        offset = road_width_normalized * 0.165
 
         for i in range(1, lanes):
             offset = offset * i

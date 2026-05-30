@@ -146,7 +146,7 @@ class RacingRender(IEngine):
     
     def stribe_mod(self,
             road: RoadRacing,
-            factor:float = 120.0,
+            factor:float = 1.0,
         ) -> bool:
     
         stribe = road.slice_z

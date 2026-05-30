@@ -107,7 +107,7 @@ class RacingRender(IEngine):
         r_road: [RoadRacing] = []
 
         # lerp road line to next road line 
-        for index_road in range(1, len(p_road)):
+        for index_road in range(0, len(p_road)):
             current_road: RoadRacing = p_road[index_road - 1][0]
             road_next: RoadRacing = p_road[index_road][0]
 
@@ -149,10 +149,10 @@ class RacingRender(IEngine):
             factor:float = 120.0,
         ) -> bool:
     
-        stribe = road.slice_z / factor
-        displacement = self.camera_z / factor
+        stribe = road.slice_z
+        displacement = self.camera_z
 
-        phase = (stribe + displacement)
+        phase = (stribe + displacement + 1.0) / factor
 
         return MathTools.floor(phase) % 2
 
